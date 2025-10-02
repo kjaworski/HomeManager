@@ -30,6 +30,8 @@ HomeManager/
 - **.NET 10** - Latest .NET framework
 - **C# Latest** - Latest C# language features (configured with `LangVersion: latest`)
 - **ASP.NET Core WebAPI** - RESTful API framework with top-level statements
+- **Microsoft OpenAPI** - Built-in OpenAPI 3.0 support (native to .NET 10)
+- **Scalar UI** - Modern, fast API documentation interface (Microsoft recommended)
 - **xUnit** - Testing framework
 - **Microsoft.AspNetCore.Mvc.Testing** - Integration testing
 
@@ -65,8 +67,8 @@ dotnet run
 ```
 
 The API will be available at:
-- HTTPS: `https://localhost:7139`
-- HTTP: `http://localhost:5139`
+- HTTPS: `https://localhost:7154` (when using HTTPS profile)
+- HTTP: `http://localhost:5179` (default profile)
 
 ### Running Tests
 
@@ -92,8 +94,10 @@ The project uses top-level statements in `Program.cs` for a clean, minimal setup
 
 ## API Documentation
 
-When running in development mode, Swagger UI is available at:
-- `https://localhost:7139/swagger`
+When running in development mode, you can access the interactive API documentation:
+- **Scalar UI**: `http://localhost:5179/scalar/v1` - Modern, fast API documentation interface
+- **OpenAPI Spec**: `http://localhost:5179/openapi/v1.json` - Machine-readable API specification
+- **Quick Access**: `http://localhost:5179/` or `http://localhost:5179/swagger` - Redirects to Scalar UI
 
 ## Future Enhancements
 
@@ -135,6 +139,23 @@ This project is optimized for VS Code development:
 2. Write tests for new features
 3. Update documentation as needed
 4. Create pull requests for review
+
+## Documentation & References
+
+### Microsoft .NET 10 & OpenAPI
+- [Microsoft OpenAPI Documentation](https://aka.ms/aspnet/openapi) - Official .NET 10 OpenAPI guide
+- [ASP.NET Core OpenAPI](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi) - Microsoft's OpenAPI implementation
+- [.NET 10 Release Notes](https://github.com/dotnet/core/tree/main/release-notes/10.0) - What's new in .NET 10
+
+### Scalar API Documentation
+- [Scalar Documentation](https://github.com/scalar/scalar) - Official Scalar GitHub repository
+- [Scalar ASP.NET Core](https://www.nuget.org/packages/Scalar.AspNetCore) - NuGet package for ASP.NET Core
+- [Scalar Live Demo](https://docs.scalar.com/) - Interactive demo of Scalar UI
+
+### Microsoft Recommendations
+- [Microsoft recommends Scalar](https://devblogs.microsoft.com/dotnet/asp-net-core-updates-in-dotnet-9/#openapi-document-generation) - Official Microsoft blog post
+- [API Documentation Best Practices](https://learn.microsoft.com/en-us/aspnet/core/tutorials/web-api-help-pages-using-swagger) - Microsoft's guidance
+- [Minimal APIs](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis) - Official Microsoft documentation
 
 ## License
 

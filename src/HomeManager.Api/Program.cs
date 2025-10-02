@@ -1,6 +1,8 @@
+using Scalar.AspNetCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Microsoft's recommended approach for .NET 10
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -10,12 +12,17 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    // Add a simple redirect to the OpenAPI documentation
-    app.MapGet("/", () => Results.Redirect("/openapi/v1.json")).ExcludeFromDescription();
-    app.MapGet("/swagger", () => Results.Redirect("/openapi/v1.json")).ExcludeFromDescription();
+
+    // Use Scalar UI - Microsoft's recommended alternative to Swagger UI
+    app.MapScalarApiReference();
+
+    // Optional: Add redirects for convenience
+    app.MapGet("/", () => Results.Redirect("/scalar/v1")).ExcludeFromDescription();
+    app.MapGet("/swagger", () => Results.Redirect("/scalar/v1")).ExcludeFromDescription();
 }
 
-app.UseHttpsRedirection();
+// Comment out HTTPS redirect to avoid warnings in development
+// app.UseHttpsRedirection();
 
 var summaries = new[]
 {
