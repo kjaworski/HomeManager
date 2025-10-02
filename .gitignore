@@ -1,0 +1,364 @@
+# =======================================================================
+# .NET / ASP.NET Core
+# =======================================================================
+
+# Build artifacts
+bin/
+obj/
+out/
+artifacts/
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# Visual Studio files
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.tlog
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+*.e2e
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# Visual C++ cache files
+ipch/
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+
+# .NET Core & NuGet
+project.lock.json
+project.fragment.lock.json
+*.nuget.props
+*.nuget.targets
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Publishing & Deployment
+publish/
+*.[Pp]ublish.xml
+*.azurePubxml
+*.pubxml
+*.publishproj
+csx/
+*.build.csdef
+ecf/
+rcf/
+
+# Windows Store app package
+AppPackages/
+BundleArtifacts/
+Package.StoreAssociation.xml
+_pkginfo.txt
+*.appx
+*.appxbundle
+*.appxupload
+
+# Cache files
+*.[Cc]ache
+!?*.[Cc]ache/
+
+# =======================================================================
+# Code Editors & IDEs
+# =======================================================================
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+*.code-workspace
+.history/
+*.vsix
+
+# JetBrains Rider
+*.sln.iml
+.idea/
+
+# Visual Studio History
+.localhistory/
+.vshistory/
+
+# =======================================================================
+# Testing & Code Coverage
+# =======================================================================
+
+# Test tools
+_Chutzpah*
+_NCrunch_*
+.*crunch*.local.xml
+nCrunchTemp_*
+*.mm.*
+AutoTest.Net/
+
+# Code coverage
+*.dotCover
+.axoCover/*
+!.axoCover/settings.json
+coverage*.json
+coverage*.xml
+coverage*.info
+*.coverage
+*.coveragexml
+coverage/
+*.lcov
+.nyc_output
+
+# =======================================================================
+# Development Tools & Analyzers
+# =======================================================================
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# StyleCop
+StyleCopReport.xml
+
+# TeamCity
+_TeamCity*
+
+# Various tools
+$tf/
+*.gpState
+*.GhostDoc.xml
+*.tss
+*.jmconfig
+.cr/personal
+.mfractor/
+.ionide/
+FodyWeavers.xsd
+OpenCover/
+ASALocalRun/
+*.binlog
+*.nvuser
+healthchecksdb
+MigrationBackup/
+mono_crash.*
+
+# Business Intelligence projects
+*.rdl.data
+*.bim.layout
+*.bim_*.settings
+*.rptproj.rsuser
+*- [Bb]ackup.rdl
+*- [Bb]ackup ([0-9]).rdl
+*- [Bb]ackup ([0-9][0-9]).rdl
+
+# Legacy Visual Studio
+*.plg
+*.opt
+*.vbw
+*.vbp
+*.dsw
+*.dsp
+**/*.HTMLClient/GeneratedArtifacts
+**/*.DesktopClient/GeneratedArtifacts
+**/*.DesktopClient/ModelManifest.xml
+**/*.Server/GeneratedArtifacts
+**/*.Server/ModelManifest.xml
+_Pvt_Extensions
+
+# Package managers
+.paket/paket.exe
+paket-files/
+.fake/
+
+# Build tools
+[Ee]xpress/
+.sass-cache/
+
+# DocProject
+DocProject/buildhelp/
+DocProject/Help/*.HxT
+DocProject/Help/*.HxC
+DocProject/Help/Html2
+DocProject/Help/html
+
+# Backup files
+_UpgradeReport_Files/
+Backup*/
+UpgradeLog*.XML
+UpgradeLog*.htm
+CDF_UpgradeLog*.xml
+
+# =======================================================================
+# Node.js / JavaScript / Frontend
+# =======================================================================
+
+# Dependencies
+node_modules/
+jspm_packages/
+bower_components/
+
+# Build outputs
+dist/
+.next/
+out/
+.nuxt/
+build/Release
+
+# Cache directories
+.npm
+.cache/
+.parcel-cache/
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage & testing
+.nyc_output
+
+# Build tools
+.grunt
+.lock-wscript
+
+# Package files
+*.tgz
+.yarn-integrity
+
+# Linting
+.eslintcache
+
+# Storybook
+.out/
+.storybook-out/
+storybook-static/
+
+# Optional REPL history
+.node_repl_history
+
+# Tools for Visual Studio
+.ntvs_analysis.dat
+__pycache__/
+*.pyc
+
+# =======================================================================
+# Databases
+# =======================================================================
+
+*.mdf
+*.ldf
+*.ndf
+*.db
+*.sqlite
+*.sqlite3
+
+# =======================================================================
+# Environment & Configuration
+# =======================================================================
+
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# =======================================================================
+# Temporary & System Files
+# =======================================================================
+
+# Temporary folders
+tmp/
+temp/
+
+# System files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editor temp files
+*.swp
+*.swo
+~$*
+*~
+
+# Project specific
+ClientBin/
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.pfx
+*.publishsettings
+orleans.codegen.cs
+Generated_Code/
+FakesAssemblies/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
