@@ -240,6 +240,6 @@ AI-Assisted Review:
 ## References
 
 - [GitHub Copilot Best Practices](https://docs.github.com/en/copilot/using-github-copilot/best-practices-for-using-github-copilot)
-- [AI-Assisted Software Development Guidelines](https://microsoft.github.io/code-with-engineering-playbook/automated-testing/synthetic-data-for-testing/)
+- [Microsoft Code With Engineering Playbook](https://microsoft.github.io/code-with-engineering-playbook/)
 - [Claude for Developers Documentation](https://docs.anthropic.com/claude/docs)
 - [OpenAI GPT Developer Guide](https://platform.openai.com/docs/guides/text-generation)
