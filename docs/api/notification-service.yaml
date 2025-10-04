@@ -1,0 +1,311 @@
+openapi: 3.0.3
+info:
+  title: HomeManager Notification Service API
+  description: |
+    Push notifications and alerts service for HomeManager system.
+    Handles notification delivery, preferences, and multi-channel messaging.
+  version: 1.0.0
+  contact:
+    name: HomeManager Development Team
+    url: https://github.com/kjaworski/HomeManager
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.homemanager.local/notifications
+    description: Local development server
+  - url: https://api.homemanager.com/notifications
+    description: Production server
+
+security:
+  - bearerAuth: []
+
+paths:
+  /send:
+    post:
+      tags:
+        - Notifications
+      summary: Send notification
+      description: Send a notification to specific users or family members
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendNotificationRequest'
+      responses:
+        '201':
+          description: Notification sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationResponse'
+
+  /preferences:
+    get:
+      tags:
+        - Preferences
+      summary: Get notification preferences
+      description: Retrieve user's notification preferences
+      responses:
+        '200':
+          description: Preferences retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPreferences'
+
+    put:
+      tags:
+        - Preferences
+      summary: Update notification preferences
+      description: Update user's notification preferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePreferencesRequest'
+      responses:
+        '200':
+          description: Preferences updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPreferences'
+
+  /history:
+    get:
+      tags:
+        - History
+      summary: Get notification history
+      description: Retrieve user's notification history
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: History retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationHistoryResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    SendNotificationRequest:
+      type: object
+      required:
+        - recipients
+        - title
+        - message
+        - type
+      properties:
+        recipients:
+          type: array
+          items:
+            type: string
+            format: uuid
+        title:
+          type: string
+          example: "Todo Reminder"
+        message:
+          type: string
+          example: "Don't forget to take out the trash today!"
+        type:
+          type: string
+          enum: [todo_reminder, budget_alert, family_update, system]
+        priority:
+          type: string
+          enum: [low, normal, high]
+          default: normal
+        channels:
+          type: array
+          items:
+            type: string
+            enum: [push, email, sms]
+          default: [push]
+        scheduledFor:
+          type: string
+          format: date-time
+          description: Optional scheduled delivery time
+        metadata:
+          type: object
+          description: Additional data for the notification
+
+    NotificationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [sent, scheduled, failed]
+        sentAt:
+          type: string
+          format: date-time
+        deliveryReport:
+          type: object
+          properties:
+            push:
+              type: object
+              properties:
+                delivered:
+                  type: integer
+                failed:
+                  type: integer
+            email:
+              type: object
+              properties:
+                delivered:
+                  type: integer
+                failed:
+                  type: integer
+
+    NotificationPreferences:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        pushEnabled:
+          type: boolean
+          default: true
+        emailEnabled:
+          type: boolean
+          default: true
+        smsEnabled:
+          type: boolean
+          default: false
+        categories:
+          type: object
+          properties:
+            todoReminders:
+              type: boolean
+              default: true
+            budgetAlerts:
+              type: boolean
+              default: true
+            familyUpdates:
+              type: boolean
+              default: true
+            systemNotifications:
+              type: boolean
+              default: true
+        quietHours:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+              default: false
+            startTime:
+              type: string
+              format: time
+              example: "22:00"
+            endTime:
+              type: string
+              format: time
+              example: "07:00"
+        timezone:
+          type: string
+          example: "America/New_York"
+
+    UpdatePreferencesRequest:
+      type: object
+      properties:
+        pushEnabled:
+          type: boolean
+        emailEnabled:
+          type: boolean
+        smsEnabled:
+          type: boolean
+        categories:
+          type: object
+          properties:
+            todoReminders:
+              type: boolean
+            budgetAlerts:
+              type: boolean
+            familyUpdates:
+              type: boolean
+            systemNotifications:
+              type: boolean
+        quietHours:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+            startTime:
+              type: string
+              format: time
+            endTime:
+              type: string
+              format: time
+        timezone:
+          type: string
+
+    NotificationHistoryResponse:
+      type: object
+      properties:
+        notifications:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              title:
+                type: string
+              message:
+                type: string
+              type:
+                type: string
+              sentAt:
+                type: string
+                format: date-time
+              read:
+                type: boolean
+              readAt:
+                type: string
+                format: date-time
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - timestamp
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time

@@ -1,0 +1,431 @@
+openapi: 3.0.3
+info:
+  title: HomeManager File Storage API
+  description: |
+    Receipt images and document management service for HomeManager system.
+    Handles file uploads, storage, and retrieval with security and family isolation.
+  version: 1.0.0
+  contact:
+    name: HomeManager Development Team
+    url: https://github.com/kjaworski/HomeManager
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.homemanager.local/files
+    description: Local development server
+  - url: https://api.homemanager.com/files
+    description: Production server
+
+security:
+  - bearerAuth: []
+
+paths:
+  /upload:
+    post:
+      tags:
+        - File Upload
+      summary: Upload file
+      description: Upload a file (receipt, document, etc.) to family storage
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - familyId
+                - category
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File to upload
+                familyId:
+                  type: string
+                  format: uuid
+                category:
+                  type: string
+                  enum: [receipt, document, avatar, general]
+                description:
+                  type: string
+                  description: Optional file description
+                tags:
+                  type: string
+                  description: Comma-separated tags
+      responses:
+        '201':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileResponse'
+        '400':
+          description: Invalid file or request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '413':
+          description: File too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /files:
+    get:
+      tags:
+        - File Management
+      summary: List files
+      description: List files for the family with filtering and pagination
+      parameters:
+        - name: familyId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [receipt, document, avatar, general]
+        - name: tags
+          in: query
+          schema:
+            type: string
+            description: Comma-separated tags to filter by
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: Files retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileListResponse'
+
+  /files/{fileId}:
+    get:
+      tags:
+        - File Management
+      summary: Get file metadata
+      description: Retrieve file metadata by ID
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: File metadata retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileResponse'
+        '404':
+          description: File not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - File Management
+      summary: Delete file
+      description: Delete a file and its metadata
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: File deleted successfully
+        '404':
+          description: File not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Permission denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /files/{fileId}/download:
+    get:
+      tags:
+        - File Access
+      summary: Download file
+      description: Download the actual file content
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: File content
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+                example: 'attachment; filename="receipt.jpg"'
+            Content-Type:
+              schema:
+                type: string
+                example: 'image/jpeg'
+        '404':
+          description: File not found
+
+  /files/{fileId}/url:
+    get:
+      tags:
+        - File Access
+      summary: Get presigned URL
+      description: Get a temporary presigned URL for direct file access
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: expiresIn
+          in: query
+          schema:
+            type: integer
+            default: 3600
+            maximum: 86400
+            description: URL expiration time in seconds
+      responses:
+        '200':
+          description: Presigned URL generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    format: uri
+                    description: Presigned URL for file access
+                  expiresAt:
+                    type: string
+                    format: date-time
+                    description: When the URL expires
+
+  /storage/usage:
+    get:
+      tags:
+        - Storage Management
+      summary: Get storage usage
+      description: Get storage usage statistics for the family
+      parameters:
+        - name: familyId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Storage usage retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageUsageResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    FileResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        familyId:
+          type: string
+          format: uuid
+        fileName:
+          type: string
+          example: "receipt_20241004.jpg"
+        originalName:
+          type: string
+          example: "grocery_receipt.jpg"
+        mimeType:
+          type: string
+          example: "image/jpeg"
+        size:
+          type: integer
+          description: File size in bytes
+          example: 1048576
+        category:
+          type: string
+          enum: [receipt, document, avatar, general]
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        url:
+          type: string
+          format: uri
+          description: Public URL for file access (if applicable)
+        thumbnailUrl:
+          type: string
+          format: uri
+          description: Thumbnail URL for images
+        uploadedBy:
+          type: string
+          format: uuid
+        uploadedAt:
+          type: string
+          format: date-time
+        lastAccessedAt:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+          description: Additional file metadata
+          properties:
+            width:
+              type: integer
+              description: Image width in pixels
+            height:
+              type: integer
+              description: Image height in pixels
+            exif:
+              type: object
+              description: EXIF data for images
+
+    FileListResponse:
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileResponse'
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+            totalPages:
+              type: integer
+        summary:
+          type: object
+          properties:
+            totalFiles:
+              type: integer
+            totalSize:
+              type: integer
+              description: Total size in bytes
+            categoryBreakdown:
+              type: object
+              properties:
+                receipts:
+                  type: integer
+                documents:
+                  type: integer
+                avatars:
+                  type: integer
+                general:
+                  type: integer
+
+    StorageUsageResponse:
+      type: object
+      properties:
+        familyId:
+          type: string
+          format: uuid
+        totalUsed:
+          type: integer
+          description: Total storage used in bytes
+        totalLimit:
+          type: integer
+          description: Storage limit in bytes
+        percentageUsed:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+        categoryUsage:
+          type: object
+          properties:
+            receipts:
+              type: integer
+            documents:
+              type: integer
+            avatars:
+              type: integer
+            general:
+              type: integer
+        fileCount:
+          type: integer
+        lastUpdated:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - timestamp
+      properties:
+        error:
+          type: string
+          description: Error code
+          example: "FILE_TOO_LARGE"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "File size exceeds maximum limit of 10MB"
+        details:
+          type: object
+          description: Additional error details
+        timestamp:
+          type: string
+          format: date-time
+        traceId:
+          type: string
+          description: Request trace ID for debugging

@@ -1,0 +1,353 @@
+openapi: 3.0.3
+info:
+  title: HomeManager Budget Service API
+  description: |
+    Expense tracking and budget management service for HomeManager system.
+    Handles financial transactions, budgets, categories, and AI-powered insights.
+  version: 1.0.0
+  contact:
+    name: HomeManager Development Team
+    url: https://github.com/kjaworski/HomeManager
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.homemanager.local/budget
+    description: Local development server
+  - url: https://api.homemanager.com/budget
+    description: Production server
+
+security:
+  - bearerAuth: []
+
+paths:
+  /expenses:
+    get:
+      tags:
+        - Expense Management
+      summary: Get expenses
+      description: Retrieve expenses for the family with filtering and pagination
+      parameters:
+        - name: familyId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Expenses retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpenseListResponse'
+
+    post:
+      tags:
+        - Expense Management
+      summary: Create new expense
+      description: Record a new expense transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateExpenseRequest'
+      responses:
+        '201':
+          description: Expense created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+
+  /budgets:
+    get:
+      tags:
+        - Budget Management
+      summary: Get budgets
+      description: Retrieve budgets for the family
+      parameters:
+        - name: familyId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Budgets retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  budgets:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Budget'
+
+    post:
+      tags:
+        - Budget Management
+      summary: Create budget
+      description: Create a new budget for a category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBudgetRequest'
+      responses:
+        '201':
+          description: Budget created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+
+  /analytics/spending:
+    get:
+      tags:
+        - Analytics
+      summary: Get spending analytics
+      description: Get spending analysis and insights
+      parameters:
+        - name: familyId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [week, month, quarter, year]
+            default: month
+      responses:
+        '200':
+          description: Analytics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpendingAnalytics'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Expense:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        familyId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: decimal
+          example: 29.99
+        description:
+          type: string
+          example: "Grocery shopping at Walmart"
+        category:
+          type: string
+          example: "groceries"
+        date:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+          format: uuid
+        receiptUrl:
+          type: string
+          format: uri
+        tags:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateExpenseRequest:
+      type: object
+      required:
+        - familyId
+        - amount
+        - description
+        - category
+      properties:
+        familyId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: decimal
+          example: 29.99
+        description:
+          type: string
+          example: "Grocery shopping at Walmart"
+        category:
+          type: string
+          example: "groceries"
+        date:
+          type: string
+          format: date-time
+        receiptImage:
+          type: string
+          format: byte
+          description: Base64 encoded receipt image
+        tags:
+          type: array
+          items:
+            type: string
+
+    Budget:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        familyId:
+          type: string
+          format: uuid
+        category:
+          type: string
+        amount:
+          type: number
+          format: decimal
+        period:
+          type: string
+          enum: [weekly, monthly, yearly]
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        spent:
+          type: number
+          format: decimal
+        remaining:
+          type: number
+          format: decimal
+        percentUsed:
+          type: number
+          format: float
+
+    CreateBudgetRequest:
+      type: object
+      required:
+        - familyId
+        - category
+        - amount
+        - period
+      properties:
+        familyId:
+          type: string
+          format: uuid
+        category:
+          type: string
+        amount:
+          type: number
+          format: decimal
+        period:
+          type: string
+          enum: [weekly, monthly, yearly]
+        startDate:
+          type: string
+          format: date
+
+    SpendingAnalytics:
+      type: object
+      properties:
+        totalSpent:
+          type: number
+          format: decimal
+        categoryBreakdown:
+          type: array
+          items:
+            type: object
+            properties:
+              category:
+                type: string
+              amount:
+                type: number
+                format: decimal
+              percentage:
+                type: number
+                format: float
+        trends:
+          type: object
+          properties:
+            monthOverMonth:
+              type: number
+              format: float
+            yearOverYear:
+              type: number
+              format: float
+
+    ExpenseListResponse:
+      type: object
+      properties:
+        expenses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Expense'
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - timestamp
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time

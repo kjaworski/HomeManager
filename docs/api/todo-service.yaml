@@ -1,0 +1,673 @@
+openapi: 3.0.3
+info:
+  title: HomeManager Todo Service API
+  description: |
+    Task creation, assignment, and tracking service for HomeManager system.
+    Handles todo management, task assignments, priorities, and AI-powered suggestions.
+  version: 1.0.0
+  contact:
+    name: HomeManager Development Team
+    url: https://github.com/kjaworski/HomeManager
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.homemanager.local/todos
+    description: Local development server
+  - url: https://api.homemanager.com/todos
+    description: Production server
+
+security:
+  - bearerAuth: []
+
+paths:
+  /todos:
+    get:
+      tags:
+        - Todo Management
+      summary: Get todos
+      description: Retrieve todos for the current user's family with filtering and pagination
+      parameters:
+        - name: familyId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, in_progress, completed, archived]
+        - name: assignedTo
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: [low, medium, high, urgent]
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: Todos retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoListResponse'
+
+    post:
+      tags:
+        - Todo Management
+      summary: Create new todo
+      description: Create a new todo item for the family
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTodoRequest'
+      responses:
+        '201':
+          description: Todo created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '400':
+          description: Invalid todo data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /todos/{todoId}:
+    get:
+      tags:
+        - Todo Management
+      summary: Get todo by ID
+      description: Retrieve a specific todo item by its ID
+      parameters:
+        - name: todoId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Todo retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Todo Management
+      summary: Update todo
+      description: Update an existing todo item
+      parameters:
+        - name: todoId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTodoRequest'
+      responses:
+        '200':
+          description: Todo updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Todo Management
+      summary: Delete todo
+      description: Delete a todo item (soft delete)
+      parameters:
+        - name: todoId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Todo deleted successfully
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /todos/{todoId}/complete:
+    post:
+      tags:
+        - Todo Management
+      summary: Mark todo as complete
+      description: Mark a todo item as completed
+      parameters:
+        - name: todoId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notes:
+                  type: string
+                  description: Optional completion notes
+      responses:
+        '200':
+          description: Todo marked as complete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+
+  /todos/{todoId}/assign:
+    post:
+      tags:
+        - Todo Management
+      summary: Assign todo to family member
+      description: Assign or reassign a todo to a family member
+      parameters:
+        - name: todoId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignTodoRequest'
+      responses:
+        '200':
+          description: Todo assigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+
+  /todos/categories:
+    get:
+      tags:
+        - Categories
+      summary: Get todo categories
+      description: Retrieve available todo categories for the family
+      parameters:
+        - name: familyId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TodoCategory'
+
+    post:
+      tags:
+        - Categories
+      summary: Create todo category
+      description: Create a new todo category for the family
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryRequest'
+      responses:
+        '201':
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoCategory'
+
+  /todos/suggestions:
+    get:
+      tags:
+        - AI Features
+      summary: Get AI-powered todo suggestions
+      description: Get intelligent todo suggestions based on family patterns and context
+      parameters:
+        - name: familyId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: context
+          in: query
+          schema:
+            type: string
+            description: Context for suggestions (e.g., "weekly_planning", "seasonal")
+      responses:
+        '200':
+          description: Suggestions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TodoSuggestion'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Todo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        familyId:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: "Take out trash"
+        description:
+          type: string
+          example: "Weekly trash collection on Tuesday morning"
+        status:
+          type: string
+          enum: [pending, in_progress, completed, archived]
+          default: pending
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+          default: medium
+        category:
+          type: string
+          example: "household"
+        assignedTo:
+          type: string
+          format: uuid
+          description: User ID of assigned family member
+        assignedBy:
+          type: string
+          format: uuid
+          description: User ID who assigned the task
+        dueDate:
+          type: string
+          format: date-time
+        estimatedMinutes:
+          type: integer
+          description: Estimated completion time in minutes
+          example: 15
+        actualMinutes:
+          type: integer
+          description: Actual completion time in minutes
+        recurring:
+          $ref: '#/components/schemas/RecurringConfig'
+        tags:
+          type: array
+          items:
+            type: string
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/TodoAttachment'
+        completedAt:
+          type: string
+          format: date-time
+        completedBy:
+          type: string
+          format: uuid
+        completionNotes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+          format: uuid
+
+    CreateTodoRequest:
+      type: object
+      required:
+        - familyId
+        - title
+      properties:
+        familyId:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: "Take out trash"
+        description:
+          type: string
+          example: "Weekly trash collection on Tuesday morning"
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+          default: medium
+        category:
+          type: string
+          example: "household"
+        assignedTo:
+          type: string
+          format: uuid
+        dueDate:
+          type: string
+          format: date-time
+        estimatedMinutes:
+          type: integer
+          example: 15
+        recurring:
+          $ref: '#/components/schemas/RecurringConfig'
+        tags:
+          type: array
+          items:
+            type: string
+
+    UpdateTodoRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [pending, in_progress, completed, archived]
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+        category:
+          type: string
+        assignedTo:
+          type: string
+          format: uuid
+        dueDate:
+          type: string
+          format: date-time
+        estimatedMinutes:
+          type: integer
+        recurring:
+          $ref: '#/components/schemas/RecurringConfig'
+        tags:
+          type: array
+          items:
+            type: string
+
+    AssignTodoRequest:
+      type: object
+      required:
+        - assignedTo
+      properties:
+        assignedTo:
+          type: string
+          format: uuid
+        notes:
+          type: string
+          description: Assignment notes or instructions
+
+    RecurringConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          default: false
+        pattern:
+          type: string
+          enum: [daily, weekly, monthly, yearly]
+        interval:
+          type: integer
+          description: Interval between recurrences
+          default: 1
+        daysOfWeek:
+          type: array
+          items:
+            type: integer
+            minimum: 0
+            maximum: 6
+          description: Days of week for weekly recurrence (0=Sunday)
+        dayOfMonth:
+          type: integer
+          minimum: 1
+          maximum: 31
+          description: Day of month for monthly recurrence
+        endDate:
+          type: string
+          format: date-time
+          description: When to stop recurring
+
+    TodoAttachment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fileName:
+          type: string
+        fileSize:
+          type: integer
+        mimeType:
+          type: string
+        url:
+          type: string
+          format: uri
+        uploadedBy:
+          type: string
+          format: uuid
+        uploadedAt:
+          type: string
+          format: date-time
+
+    TodoCategory:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        familyId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "household"
+        description:
+          type: string
+          example: "Household chores and maintenance"
+        color:
+          type: string
+          example: "#FF6B6B"
+        icon:
+          type: string
+          example: "home"
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateCategoryRequest:
+      type: object
+      required:
+        - familyId
+        - name
+      properties:
+        familyId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "household"
+        description:
+          type: string
+          example: "Household chores and maintenance"
+        color:
+          type: string
+          example: "#FF6B6B"
+        icon:
+          type: string
+          example: "home"
+
+    TodoSuggestion:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Clean refrigerator"
+        description:
+          type: string
+          example: "Based on your monthly pattern, it's time to clean the refrigerator"
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+        category:
+          type: string
+          example: "household"
+        estimatedMinutes:
+          type: integer
+          example: 30
+        reasoning:
+          type: string
+          example: "You typically clean the refrigerator every 4 weeks, and it's been 28 days since the last cleaning"
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          example: 0.85
+
+    TodoListResponse:
+      type: object
+      properties:
+        todos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Todo'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        summary:
+          $ref: '#/components/schemas/TodoSummary'
+
+    PaginationInfo:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 156
+        totalPages:
+          type: integer
+          example: 8
+        hasNext:
+          type: boolean
+        hasPrevious:
+          type: boolean
+
+    TodoSummary:
+      type: object
+      properties:
+        totalCount:
+          type: integer
+        pendingCount:
+          type: integer
+        inProgressCount:
+          type: integer
+        completedCount:
+          type: integer
+        overdueCount:
+          type: integer
+        dueTodayCount:
+          type: integer
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - timestamp
+      properties:
+        error:
+          type: string
+          description: Error code
+          example: "VALIDATION_ERROR"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Title is required"
+        details:
+          type: object
+          description: Additional error details
+        timestamp:
+          type: string
+          format: date-time
+        traceId:
+          type: string
+          description: Request trace ID for debugging
