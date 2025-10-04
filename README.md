@@ -101,6 +101,19 @@ When running in development mode, you can access the interactive API documentati
 - **OpenAPI Spec**: `http://localhost:5179/openapi/v1.json` - Machine-readable API specification
 - **Quick Access**: `http://localhost:5179/` or `http://localhost:5179/swagger` - Redirects to Scalar UI
 
+## 📚 Documentation
+
+For comprehensive documentation including architecture decisions, implementation guides, and detailed technical information, see:
+
+**[📖 Full Documentation](docs/README.md)**
+
+Key documentation sections:
+- [System Architecture](docs/architecture/system-overview.md) - Microservices design and service communication
+- [Architecture Decision Records (ADRs)](docs/adr/) - Technical decisions and rationale
+- [API Specifications](docs/api/README.md) - Detailed API contracts and standards
+- [Implementation Guides](docs/implementation/README.md) - Step-by-step development guides
+- [AI-Assisted Development](docs/ai-prompts/README.md) - Prompts and patterns for AI tools
+
 ## Future Enhancements
 
 This repository is structured to accommodate:

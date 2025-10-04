@@ -1,16 +1,49 @@
 {
     "dotnet.defaultSolution": "HomeManager.sln",
-    "omnisharp.enableEditorConfigSupport": true,
-    "omnisharp.enableImportCompletion": true,
-    "omnisharp.enableRoslynAnalyzers": true,
+    // File management
     "files.exclude": {
         "**/bin": true,
         "**/obj": true
     },
+    // Editor behavior
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
         "source.fixAll": "explicit",
         "source.organizeImports": "explicit"
     },
-    "dotnet.server.useOmnisharp": false
+    // Modern .NET tooling (C# Dev Kit)
+    "dotnet.server.useOmnisharp": false,
+    "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true,
+    // Enhanced analysis and diagnostics
+    "dotnet.backgroundAnalysis.analyzerDiagnosticsScope": "fullSolution",
+    "dotnet.backgroundAnalysis.compilerDiagnosticsScope": "fullSolution",
+    "dotnet.codeLens.enableReferencesCodeLens": true,
+    // Enhanced IntelliSense with inlay hints
+    "dotnet.inlayHints.enableInlayHintsForParameters": true,
+    "dotnet.inlayHints.enableInlayHintsForLiteralParameters": true,
+    "dotnet.inlayHints.enableInlayHintsForIndexerParameters": true,
+    "dotnet.inlayHints.enableInlayHintsForObjectCreationParameters": true,
+    "dotnet.inlayHints.enableInlayHintsForOtherParameters": true,
+    "dotnet.inlayHints.enableInlayHintsForTypes": true,
+    "dotnet.inlayHints.enableInlayHintsForImplicitVariableTypes": true,
+    "dotnet.inlayHints.enableInlayHintsForLambdaParameterTypes": true,
+    "dotnet.inlayHints.enableInlayHintsForImplicitObjectCreation": true,
+    // AI-Powered Development Tools
+    "github.copilot.enable": {
+        "*": true,
+        "yaml": true,
+        "plaintext": true,
+        "markdown": true,
+        "csharp": true,
+        "typescript": true,
+        "javascript": true,
+        "json": true
+    },
+    "github.copilot.inlineSuggest.enable": true,
+    "github.copilot.chat.localeOverride": "en",
+    // IntelliCode AI assistance
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "vsintellicode.features.csharp.deepLearning": "enabled",
+    "vsintellicode.features.typescript.deepLearning": "enabled",
+    "vsintellicode.features.python.deepLearning": "enabled"
 }
