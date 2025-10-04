@@ -144,16 +144,18 @@ This project is optimized for VS Code development:
 
 ### Microsoft .NET 10 & OpenAPI
 - [Microsoft OpenAPI Documentation](https://aka.ms/aspnet/openapi) - Official .NET 10 OpenAPI guide
-- [ASP.NET Core OpenAPI](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi) - Microsoft's OpenAPI implementation
+- [Generate OpenAPI documents](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/aspnetcore-openapi) - Comprehensive OpenAPI implementation guide
+- [ASP.NET Core Minimal APIs](https://learn.microsoft.com/en-us/aspnet/core/tutorials/min-web-api) - Microsoft's minimal API tutorial with OpenAPI
 - [.NET 10 Release Notes](https://github.com/dotnet/core/tree/main/release-notes/10.0) - What's new in .NET 10
 
 ### Scalar API Documentation
-- [Scalar Documentation](https://github.com/scalar/scalar) - Official Scalar GitHub repository
+- [Scalar Documentation](https://github.com/scalar/scalar) - Official Scalar GitHub repository  
 - [Scalar ASP.NET Core](https://www.nuget.org/packages/Scalar.AspNetCore) - NuGet package for ASP.NET Core
 - [Scalar Live Demo](https://docs.scalar.com/) - Interactive demo of Scalar UI
+- [Why Scalar over Swagger UI](https://docs.scalar.com/swagger-ui-alternative) - Modern, fast API documentation interface
 
 ### Microsoft Recommendations
-- [Microsoft recommends Scalar](https://devblogs.microsoft.com/dotnet/asp-net-core-updates-in-dotnet-9/#openapi-document-generation) - Official Microsoft blog post
+- [OpenAPI in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/aspnetcore-openapi) - Official Microsoft OpenAPI documentation
 - [API Documentation Best Practices](https://learn.microsoft.com/en-us/aspnet/core/tutorials/web-api-help-pages-using-swagger) - Microsoft's guidance
 - [Minimal APIs](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis) - Official Microsoft documentation
 
