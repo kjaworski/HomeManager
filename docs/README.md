@@ -5,7 +5,7 @@
 
 ## 📚 Documentation Structure
 
-```
+```text
 docs/
 ├── README.md                           # This file - Documentation overview
 ├── architecture/
@@ -40,12 +40,14 @@ docs/
 ## 🎯 **Project Goals**
 
 ### **Business Objectives**
+
 - **Family Home Management**: Centralized platform for household organization
 - **Financial Awareness**: Budget tracking and expense management
 - **Task Coordination**: Collaborative family task management
 - **AI-Enhanced UX**: Intelligent suggestions and automation
 
 ### **Technical Learning Goals**
+
 - **Microservices Architecture**: Distributed system design patterns
 - **Cloud-Native Development**: AWS services integration
 - **NoSQL Databases**: DynamoDB and DocumentDB experience
@@ -56,6 +58,7 @@ docs/
 ## 🚀 **Technology Stack**
 
 ### **Backend Services**
+
 ```yaml
 Framework: ASP.NET Core 10 (Latest)
 Language: C# (Latest version)
@@ -64,6 +67,7 @@ Authentication: JWT + AWS Cognito (future)
 ```
 
 ### **Databases**
+
 ```yaml
 Identity Service: Amazon RDS PostgreSQL (ACID compliance)
 Todo Service: Amazon DynamoDB (NoSQL flexibility)
@@ -72,6 +76,7 @@ Caching: Amazon ElastiCache Redis
 ```
 
 ### **AI & Intelligence**
+
 ```yaml
 AI Platform: Amazon Bedrock (Claude, GPT models)
 MCP Servers: Model Context Protocol integration
@@ -79,6 +84,7 @@ AI Features: Natural language processing, smart suggestions
 ```
 
 ### **Cloud Infrastructure**
+
 ```yaml
 Cloud Provider: AWS
 Compute: Amazon EKS (Kubernetes)
@@ -89,6 +95,7 @@ Monitoring: CloudWatch + X-Ray
 ```
 
 ### **Frontend**
+
 ```yaml
 Framework: React 18+ (TypeScript)
 Architecture: Micro-frontends (separate apps)
@@ -98,6 +105,7 @@ UI Library: Tailwind CSS + shadcn/ui
 ```
 
 ### **DevOps & Deployment**
+
 ```yaml
 CI/CD: GitHub Actions
 Containers: Docker + Amazon ECR
@@ -109,11 +117,13 @@ Monitoring: Prometheus + Grafana + CloudWatch
 ## 🤖 **AI-Assisted Development Setup**
 
 ### **GitHub Copilot Configuration**
+
 - **Workspace optimized** for multi-service development
 - **Custom prompts** for microservice generation
 - **Context-aware** service templates
 
 ### **Claude/GPT Integration**
+
 - **MCP server protocols** for AI tool integration
 - **Service-specific prompts** for accurate code generation
 - **Architecture-aware** implementation guidance
@@ -121,30 +131,35 @@ Monitoring: Prometheus + Grafana + CloudWatch
 ## 📋 **Implementation Phases**
 
 ### **Phase 1: Foundation** (Current)
+
 - [x] Project structure setup
 - [x] Basic API with OpenAPI + Scalar
 - [ ] Identity service implementation
 - [ ] Development environment setup
 
 ### **Phase 2: Core Services**
+
 - [ ] Todo service with DynamoDB
 - [ ] Budget service with DocumentDB
 - [ ] API Gateway setup
 - [ ] Service-to-service communication
 
 ### **Phase 3: AI Integration**
+
 - [ ] MCP server implementation
 - [ ] AI-enhanced todo features
 - [ ] Smart budget insights
 - [ ] Natural language processing
 
 ### **Phase 4: Frontend Development**
+
 - [ ] React Todo app
 - [ ] React Budget app
 - [ ] AI chat interfaces
 - [ ] Responsive design
 
 ### **Phase 5: Production Readiness**
+
 - [ ] CI/CD pipeline
 - [ ] Monitoring & logging
 - [ ] Security hardening
@@ -169,4 +184,4 @@ This project is designed for AI-assisted development. When working with AI model
 
 ---
 
-*Built with ❤️ for modern families and AI-assisted development*
+## Built with ❤️ for modern families and AI-assisted development
