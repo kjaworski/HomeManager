@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
-using System.Net;
 using System.Text.Json;
+using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace HomeManager.Api.Tests;
 
@@ -19,11 +18,11 @@ public class WeatherForecastTests : IClassFixture<WebApplicationFactory<Program>
     public async Task GetWeatherForecast_ReturnsSuccessAndCorrectContentType()
     {
         // Act
-        var response = await _client.GetAsync("/weatherforecast");
+        var response = await _client.GetAsync("/weatherforecast", TestContext.Current.CancellationToken);
 
         // Assert
         response.EnsureSuccessStatusCode();
-        Assert.Equal("application/json; charset=utf-8", 
+        Assert.Equal("application/json; charset=utf-8",
             response.Content.Headers.ContentType?.ToString());
     }
 
@@ -31,8 +30,8 @@ public class WeatherForecastTests : IClassFixture<WebApplicationFactory<Program>
     public async Task GetWeatherForecast_ReturnsExpectedStructure()
     {
         // Act
-        var response = await _client.GetAsync("/weatherforecast");
-        var json = await response.Content.ReadAsStringAsync();
+        var response = await _client.GetAsync("/weatherforecast", TestContext.Current.CancellationToken);
+        var json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         var forecasts = JsonSerializer.Deserialize<WeatherForecast[]>(json, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
