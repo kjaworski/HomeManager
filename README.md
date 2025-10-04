@@ -6,7 +6,7 @@ A modern home management solution built with ASP.NET Core WebAPI and React.
 
 This solution is designed to support multiple applications:
 
-```
+```text
 HomeManager/
 ├── .vscode/                      # VS Code workspace configuration
 │   ├── settings.json            # Editor and C# DevKit settings
@@ -67,6 +67,7 @@ dotnet run
 ```
 
 The API will be available at:
+
 - HTTPS: `https://localhost:7154` (when using HTTPS profile)
 - HTTP: `http://localhost:5179` (default profile)
 
@@ -95,6 +96,7 @@ The project uses top-level statements in `Program.cs` for a clean, minimal setup
 ## API Documentation
 
 When running in development mode, you can access the interactive API documentation:
+
 - **Scalar UI**: `http://localhost:5179/scalar/v1` - Modern, fast API documentation interface
 - **OpenAPI Spec**: `http://localhost:5179/openapi/v1.json` - Machine-readable API specification
 - **Quick Access**: `http://localhost:5179/` or `http://localhost:5179/swagger` - Redirects to Scalar UI
@@ -127,7 +129,8 @@ This project is optimized for VS Code development:
 - **Integrated terminal** - For running dotnet commands
 - **Git integration** - Version control with properly configured .gitignore
 
-### Available VS Code Tasks:
+### Available VS Code Tasks
+
 - **Build** - `Ctrl+Shift+P` → "Tasks: Run Task" → "build"
 - **Test** - `Ctrl+Shift+P` → "Tasks: Run Task" → "test"
 - **Watch** - `Ctrl+Shift+P` → "Tasks: Run Task" → "watch" (hot reload)
@@ -143,18 +146,21 @@ This project is optimized for VS Code development:
 ## Documentation & References
 
 ### Microsoft .NET 10 & OpenAPI
+
 - [Microsoft OpenAPI Documentation](https://aka.ms/aspnet/openapi) - Official .NET 10 OpenAPI guide
-- [Generate OpenAPI documents](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/aspnetcore-openapi) - Comprehensive OpenAPI implementation guide
+- [Generate OpenAPI documents](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/aspnetcore-openapi) - Comprehensive OpenAPI guide
 - [ASP.NET Core Minimal APIs](https://learn.microsoft.com/en-us/aspnet/core/tutorials/min-web-api) - Microsoft's minimal API tutorial with OpenAPI
 - [.NET 10 Release Notes](https://github.com/dotnet/core/tree/main/release-notes/10.0) - What's new in .NET 10
 
 ### Scalar API Documentation
+
 - [Scalar Documentation](https://github.com/scalar/scalar) - Official Scalar GitHub repository  
 - [Scalar ASP.NET Core](https://www.nuget.org/packages/Scalar.AspNetCore) - NuGet package for ASP.NET Core
 - [Scalar Live Demo](https://docs.scalar.com/) - Interactive demo of Scalar UI
 - [Why Scalar over Swagger UI](https://docs.scalar.com/swagger-ui-alternative) - Modern, fast API documentation interface
 
 ### Microsoft Recommendations
+
 - [OpenAPI in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/aspnetcore-openapi) - Official Microsoft OpenAPI documentation
 - [API Documentation Best Practices](https://learn.microsoft.com/en-us/aspnet/core/tutorials/web-api-help-pages-using-swagger) - Microsoft's guidance
 - [Minimal APIs](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis) - Official Microsoft documentation
