@@ -55,6 +55,31 @@ docs/
 - **DevOps Practices**: CI/CD with GitHub Actions
 - **Monitoring & Observability**: Production-ready monitoring
 
+## 🏗️ **Repository Strategy**
+
+HomeManager uses a **monorepo approach** optimized for:
+
+- **AI-assisted development** with full codebase context
+- **Rapid prototyping** and cross-service iterations  
+- **Consistent patterns** across all microservices
+- **Simplified CI/CD** with unified deployment pipeline
+
+### **Repository Structure**
+
+- **`/src/Services/`** - All microservices (Identity, Todo, Budget, AI Gateway)
+- **`/src/WebApps/`** - Frontend applications (React Todo, Budget, Admin)
+- **`/shared/`** - Common libraries and contracts
+- **`/docs/`** - Comprehensive documentation
+- **`/.github/`** - CI/CD workflows and automation
+- **`/tests/`** - All service and integration tests
+
+### **Monorepo Benefits**
+
+- **GitHub Copilot optimization**: Full system context for better AI suggestions
+- **Cross-service refactoring**: Easy to maintain consistency across services
+- **Unified tooling**: Single linting, testing, and deployment configuration
+- **Atomic deployments**: Deploy related changes across services together
+
 ## 🚀 **Technology Stack**
 
 ### **Backend Services**
