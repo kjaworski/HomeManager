@@ -1,5 +1,7 @@
 # HomeManager
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A modern home management solution built with ASP.NET Core WebAPI and React.
 
 ## Project Structure
