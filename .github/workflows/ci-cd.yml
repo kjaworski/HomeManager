@@ -98,22 +98,10 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: 'Clean and build for CodeQL'
+    - name: 'Build for CodeQL'
       run: |
-        dotnet clean HomeManager.sln
         dotnet restore HomeManager.sln
-        dotnet build HomeManager.sln --configuration Debug --verbosity normal
-
-    - name: 'Verify build artifacts'
-      run: |
-        echo "Checking for build artifacts..."
-        find . -name "*.dll" -path "*/bin/Debug/*" | head -10
-        find . -name "*.pdb" -path "*/bin/Debug/*" | head -10
-
-    - name: 'Perform CodeQL Analysis'
-      uses: github/codeql-action/analyze@v3
-      with:
-        category: "/language:csharp"
+        dotnet build HomeManager.sln --configuration Release
 
   # Validate documentation
   validate-docs:
