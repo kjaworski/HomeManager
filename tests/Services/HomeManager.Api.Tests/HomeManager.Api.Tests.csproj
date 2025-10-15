@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\HomeManager.Api\HomeManager.Api.csproj" />
+    <ProjectReference Include="..\..\..\src\Services\HomeManager.Api\HomeManager.Api.csproj" />
   </ItemGroup>
 
 </Project>
