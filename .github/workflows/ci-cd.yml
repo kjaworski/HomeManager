@@ -209,7 +209,6 @@ jobs:
           exit 1
         fi
         echo "All checks passed successfully!"
-        
         # Show manual workflow info
         if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
           echo "🚀 Manual workflow completed successfully"
