@@ -98,8 +98,11 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: 'Autobuild'
-      uses: github/codeql-action/autobuild@v3
+    - name: 'Restore dependencies'
+      run: dotnet restore HomeManager.sln --verbosity minimal
+
+    - name: 'Build solution'
+      run: dotnet build HomeManager.sln --no-restore --configuration Release --verbosity minimal
 
     - name: 'Perform CodeQL Analysis'
       uses: github/codeql-action/analyze@v3
