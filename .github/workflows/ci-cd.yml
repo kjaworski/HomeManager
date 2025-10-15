@@ -200,7 +200,7 @@ jobs:
           echo "Code quality checks failed"
           exit 1
         fi
-        if [[ "${{ needs.security-scan.result }}" == "failure" ]]; then
+        if [[ "${{ needs.security-scan.result }}" != "success" ]]; then
           echo "Security scan failed"
           exit 1
         fi
