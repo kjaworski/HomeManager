@@ -98,11 +98,17 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: 'Restore dependencies'
-      run: dotnet restore HomeManager.sln --verbosity minimal
+    - name: 'Clean and build for CodeQL'
+      run: |
+        dotnet clean HomeManager.sln
+        dotnet restore HomeManager.sln
+        dotnet build HomeManager.sln --configuration Debug --verbosity normal
 
-    - name: 'Build solution'
-      run: dotnet build HomeManager.sln --no-restore --configuration Release --verbosity minimal
+    - name: 'Verify build artifacts'
+      run: |
+        echo "Checking for build artifacts..."
+        find . -name "*.dll" -path "*/bin/Debug/*" | head -10
+        find . -name "*.pdb" -path "*/bin/Debug/*" | head -10
 
     - name: 'Perform CodeQL Analysis'
       uses: github/codeql-action/analyze@v3
