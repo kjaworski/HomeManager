@@ -103,6 +103,11 @@ jobs:
         dotnet restore HomeManager.sln
         dotnet build HomeManager.sln --configuration Release
 
+    - name: 'Perform CodeQL Analysis'
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:csharp"
+
   # Validate documentation
   validate-docs:
     name: 'Validate Documentation'
