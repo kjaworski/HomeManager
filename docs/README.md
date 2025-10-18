@@ -21,11 +21,11 @@ docs/
 │   ├── 004-ai-integration.md          # AI & MCP server decisions
 │   └── 005-frontend-architecture.md   # Multiple React apps strategy
 ├── api/                               # API Documentation
-│   ├── identity-service.yaml         # Authentication & user management
-│   ├── todo-service.yaml             # Task management API
-│   ├── budget-service.yaml           # Financial management API
+│   ├── identity-service.md           # Authentication & user management
+│   ├── todo-service.md               # Task management API
+│   ├── budget-service.md             # Financial management API
 │   ├── trips-planner-service.yaml    # Travel planning API
-│   └── ai-gateway.yaml               # AI services API
+│   └── ai-gateway.md                 # AI services API
 ├── implementation/                    # Step-by-step guides
 │   ├── development-setup.md          # Local development environment
 │   ├── service-creation-guide.md     # How to create new services
