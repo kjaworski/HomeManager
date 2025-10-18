@@ -257,6 +257,74 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /api/trips/{tripId}/itinerary/{itemId}:
+    put:
+      tags:
+        - Itinerary Management
+      summary: Update itinerary item
+      description: Update an existing itinerary item
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateItineraryItemRequest'
+      responses:
+        '200':
+          description: Successfully updated itinerary item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItineraryItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Itinerary Management
+      summary: Delete itinerary item
+      description: Remove an itinerary item from the trip
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Successfully deleted itinerary item
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /api/trips/{tripId}/expenses:
     get:
       tags:
@@ -333,7 +401,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /api/trips/{tripId}/ai-suggestions:
+  /api/trips/{tripId}/ai/suggestions:
     get:
       tags:
         - AI Features
@@ -487,7 +555,8 @@ components:
       properties:
         totalBudget:
           type: number
-          format: decimal
+          format: double
+          multipleOf: 0.01
           minimum: 0
           description: Total budget for the trip
         currency:
@@ -498,7 +567,8 @@ components:
           type: object
           additionalProperties:
             type: number
-            format: decimal
+            format: double
+            multipleOf: 0.01
             minimum: 0
           description: Budget breakdown by category
       required:
@@ -552,7 +622,8 @@ components:
           $ref: '#/components/schemas/Location'
         estimatedCost:
           type: number
-          format: decimal
+          format: double
+          multipleOf: 0.01
           minimum: 0
         bookingStatus:
           type: string
@@ -607,7 +678,8 @@ components:
           format: uuid
         amount:
           type: number
-          format: decimal
+          format: double
+          multipleOf: 0.01
           minimum: 0
         currency:
           type: string
@@ -666,20 +738,24 @@ components:
       properties:
         totalSpent:
           type: number
-          format: decimal
+          format: double
+          multipleOf: 0.01
         budgetRemaining:
           type: number
-          format: decimal
+          format: double
+          multipleOf: 0.01
         categoryBreakdown:
           type: object
           additionalProperties:
             type: number
-            format: decimal
+            format: double
+            multipleOf: 0.01
         participantBreakdown:
           type: object
           additionalProperties:
             type: number
-            format: decimal
+            format: double
+            multipleOf: 0.01
 
     AISuggestion:
       type: object
@@ -696,7 +772,8 @@ components:
           type: string
         estimatedCost:
           type: number
-          format: decimal
+          format: double
+          multipleOf: 0.01
           minimum: 0
         location:
           $ref: '#/components/schemas/Location'
@@ -800,7 +877,8 @@ components:
           $ref: '#/components/schemas/Location'
         estimatedCost:
           type: number
-          format: decimal
+          format: double
+          multipleOf: 0.01
           minimum: 0
         notes:
           type: string
@@ -810,12 +888,42 @@ components:
         - type
         - startTime
 
+    UpdateItineraryItemRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        type:
+          type: string
+          enum: [accommodation, transportation, activity, meal, other]
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        location:
+          $ref: '#/components/schemas/Location'
+        estimatedCost:
+          type: number
+          format: double
+          multipleOf: 0.01
+          minimum: 0
+        notes:
+          type: string
+          maxLength: 1000
+
     CreateTripExpenseRequest:
       type: object
       properties:
         amount:
           type: number
-          format: decimal
+          format: double
+          multipleOf: 0.01
           minimum: 0
         currency:
           type: string

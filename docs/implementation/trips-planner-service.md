@@ -139,6 +139,8 @@ db.expenses.createIndex({ "category": 1 })
 
 ### Trip Entity
 ```csharp
+// Note: DateOnly requires custom MongoDB serialization
+// Add to Program.cs: BsonSerializer.RegisterSerializer(new DateOnlySerializer(BsonType.String));
 public record Trip(
     Guid Id,
     Guid FamilyId,
@@ -446,6 +448,8 @@ public class AITravelSuggestionService : IAITravelSuggestionService
         var response = await _bedrockClient.InvokeModelAsync(new InvokeModelRequest
         {
             ModelId = "anthropic.claude-3-sonnet-20240229-v1:0",
+            ContentType = "application/json",
+            Accept = "application/json",
             Body = new MemoryStream(JsonSerializer.SerializeToUtf8Bytes(new
             {
                 anthropic_version = "bedrock-2023-05-31",
@@ -686,8 +690,8 @@ public class MongoTripRepository : ITripRepository
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services
-builder.Services.AddControllers();
+// Add services  
+// Note: Using Minimal APIs only - no controllers needed
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -1038,7 +1042,7 @@ builder.Services.AddHealthChecks()
         timeout: TimeSpan.FromSeconds(5))
     // Add custom health checks for external services
     .AddUrlGroup(
-        new Uri("https://maps.googleapis.com/maps/api"),
+        new Uri("https://maps.googleapis.com"),
         name: "googlemaps",
         timeout: TimeSpan.FromSeconds(5));
 
