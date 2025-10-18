@@ -22,7 +22,7 @@ security:
   - bearerAuth: []
 
 paths:
-  /trips:
+  /api/trips:
     get:
       tags:
         - Trip Management
@@ -106,7 +106,7 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 
-  /trips/{tripId}:
+  /api/trips/{tripId}:
     get:
       tags:
         - Trip Management
@@ -192,7 +192,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /trips/{tripId}/itinerary:
+  /api/trips/{tripId}/itinerary:
     get:
       tags:
         - Itinerary Management
@@ -257,7 +257,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /trips/{tripId}/expenses:
+  /api/trips/{tripId}/expenses:
     get:
       tags:
         - Expense Management
@@ -333,7 +333,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /trips/{tripId}/ai-suggestions:
+  /api/trips/{tripId}/ai-suggestions:
     get:
       tags:
         - AI Features
