@@ -6,9 +6,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/HomeManager.Api/bin/Debug/net10.0/HomeManager.Api.dll",
+            "program": "${workspaceFolder}/src/Services/HomeManager.Api/bin/Debug/net10.0/HomeManager.Api.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/HomeManager.Api",
+            "cwd": "${workspaceFolder}/src/Services/HomeManager.Api",
             "console": "internalConsole",
             "stopAtEntry": false,
             "serverReadyAction": {

@@ -211,7 +211,7 @@ cd src/HomeManager.Budget
 dotnet run
 
 # Run API Gateway (in another terminal)
-cd src/HomeManager.Api
+cd src/Services/HomeManager.Api
 dotnet run
 ```
 
@@ -238,7 +238,7 @@ dotnet run
       "label": "Run API",
       "type": "shell",
       "command": "dotnet",
-      "args": ["run", "--project", "src/HomeManager.Api"],
+      "args": ["run", "--project", "src/Services/HomeManager.Api"],
       "group": "build",
       "isBackground": true
     }
