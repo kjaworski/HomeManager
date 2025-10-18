@@ -273,8 +273,8 @@ CREATE TABLE families (
 // Trips Planner Service: DocumentDB (MongoDB)
 {
   "_id": "trip_123",
-  "trip_id": "TRIP#456",
-  "family_id": "FAMILY#789",
+  "tripId": "TRIP#456",
+  "familyId": "FAMILY#789",
   "title": "Summer Family Vacation",
   "destination": {
     "city": "Orlando",
@@ -285,13 +285,13 @@ CREATE TABLE families (
     },
     "timezone": "America/New_York"
   },
-  "start_date": "2024-07-15",
-  "end_date": "2024-07-22",
+  "startDate": "2024-07-15",
+  "endDate": "2024-07-22",
   "status": "confirmed",
   "budget": {
-    "total_budget": 5000.00,
+    "totalBudget": 5000.00,
     "currency": "USD",
-    "category_budgets": {
+    "categoryBudgets": {
       "accommodation": 2000.00,
       "transportation": 800.00,
       "food": 1200.00,
@@ -300,22 +300,22 @@ CREATE TABLE families (
   },
   "participants": [
     {
-      "user_id": "USER#123",
+      "userId": "USER#123",
       "role": "organizer",
-      "joined_at": "2024-06-01T10:00:00Z"
+      "joinedAt": "2024-06-01T10:00:00Z"
     }
   ],
-  "ai_suggestions": {
-    "recommended_activities": [
+  "aiSuggestions": {
+    "recommendedActivities": [
       {
         "name": "Disney World Magic Kingdom",
-        "estimated_cost": 109.00,
+        "estimatedCost": 109.00,
         "rating": 4.8,
         "category": "theme_park"
       }
     ],
-    "budget_optimization": {
-      "potential_savings": 300.00,
+    "budgetOptimization": {
+      "potentialSavings": 300.00,
       "suggestions": ["Book accommodation 2 weeks earlier for 15% discount"]
     }
   }

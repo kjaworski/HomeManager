@@ -13,9 +13,9 @@ info:
     url: https://opensource.org/licenses/MIT
 
 servers:
-  - url: https://api.homemanager.local/trips
+  - url: https://api.homemanager.local
     description: Local development server
-  - url: https://api.homemanager.com/trips
+  - url: https://api.homemanager.com
     description: Production server
 
 security:

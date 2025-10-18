@@ -446,15 +446,22 @@ public class AITravelSuggestionService : IAITravelSuggestionService
         var response = await _bedrockClient.InvokeModelAsync(new InvokeModelRequest
         {
             ModelId = "anthropic.claude-3-sonnet-20240229-v1:0",
-            Body = JsonSerializer.SerializeToUtf8Bytes(new
+            Body = new MemoryStream(JsonSerializer.SerializeToUtf8Bytes(new
             {
                 anthropic_version = "bedrock-2023-05-31",
                 max_tokens = 2000,
                 messages = new[]
                 {
-                    new { role = "user", content = prompt }
+                    new
+                    {
+                        role = "user",
+                        content = new[]
+                        {
+                            new { type = "text", text = prompt }
+                        }
+                    }
                 }
-            })
+            }))
         });
 
         // Parse response and convert to AISuggestion objects
@@ -751,7 +758,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+// Use either controllers OR minimal APIs, not both for same routes
+// app.MapControllers(); // Commented out to avoid duplicate mapping for /api/trips
 app.MapTripsEndpoints();
 
 app.Run();
@@ -926,6 +934,12 @@ public class FamilyMemberHandler : AuthorizationHandler<FamilyMemberRequirement>
 {
     private readonly ICurrentUserService _currentUser;
     private readonly IFamilyService _familyService;
+
+    public FamilyMemberHandler(ICurrentUserService currentUser, IFamilyService familyService)
+    {
+        _currentUser = currentUser;
+        _familyService = familyService;
+    }
 
     protected override async Task HandleRequirementAsync(
         AuthorizationHandlerContext context,
