@@ -446,6 +446,7 @@ public class AITravelSuggestionService : IAITravelSuggestionService
             SuggestionType.Restaurants => BuildRestaurantsPrompt(trip),
             SuggestionType.Accommodations => BuildAccommodationsPrompt(trip),
             SuggestionType.Transportation => BuildTransportationPrompt(trip),
+            SuggestionType.BudgetOptimization => BuildBudgetOptimizationPrompt(trip),
             _ => throw new ArgumentException("Invalid suggestion type")
         };
 
@@ -762,7 +763,15 @@ public class MongoTripRepository : ITripRepository
 
 ### Program.cs Setup
 ```csharp
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Bson;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Register BSON serializers for DateOnly and TimeOnly
+BsonSerializer.RegisterSerializer(new DateOnlySerializer(BsonType.String));
+BsonSerializer.RegisterSerializer(new TimeOnlySerializer(BsonType.String));
 
 // Add services  
 // Note: Using Minimal APIs only - no controllers needed

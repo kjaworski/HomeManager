@@ -34,7 +34,7 @@ paths:
           description: Filter trips by status
           schema:
             type: string
-            enum: [planning, confirmed, in-progress, completed, cancelled]
+            enum: [Planning, Confirmed, InProgress, Completed, Cancelled]
         - name: dateFrom
           in: query
           description: Filter trips starting from this date
@@ -358,7 +358,7 @@ paths:
           description: Filter expenses by category
           schema:
             type: string
-            enum: [accommodation, transportation, food, activities, shopping, other]
+            enum: [Accommodation, Transportation, Food, Activities, Shopping, Other]
       responses:
         '200':
           description: Expenses retrieved successfully
@@ -415,6 +415,212 @@ paths:
                 $ref: '#/components/schemas/TripExpense'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/trips/{tripId}/expenses/{expenseId}:
+    put:
+      tags:
+        - Expense Management
+      summary: Update trip expense
+      description: Update an existing expense for the trip
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          description: Unique identifier for the trip
+          schema:
+            type: string
+            format: uuid
+        - name: expenseId
+          in: path
+          required: true
+          description: Unique identifier for the expense
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTripExpenseRequest'
+      responses:
+        '200':
+          description: Expense updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripExpense'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    delete:
+      tags:
+        - Expense Management
+      summary: Delete trip expense
+      description: Delete an expense from the trip
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          description: Unique identifier for the trip
+          schema:
+            type: string
+            format: uuid
+        - name: expenseId
+          in: path
+          required: true
+          description: Unique identifier for the expense
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Expense deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/trips/{tripId}/expenses/{expenseId}/receipt:
+    post:
+      tags:
+        - Expense Management
+      summary: Upload expense receipt
+      description: Upload a receipt file for an expense
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          description: Unique identifier for the trip
+          schema:
+            type: string
+            format: uuid
+        - name: expenseId
+          in: path
+          required: true
+          description: Unique identifier for the expense
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Receipt file to upload
+              required:
+                - file
+      responses:
+        '200':
+          description: Receipt uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receipt'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/trips/{tripId}/participants:
+    post:
+      tags:
+        - Trip Management
+      summary: Add trip participant
+      description: Add a new participant to the trip
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          description: Unique identifier for the trip
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+                  description: User ID to add as participant
+              required:
+                - userId
+      responses:
+        '201':
+          description: Participant added successfully
+          headers:
+            Location:
+              description: URI of the updated trip
+              schema:
+                type: string
+                format: uri
+                example: /api/trips/{tripId}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripParticipant'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: User is already a participant
+
+  /api/trips/{tripId}/participants/{userId}:
+    delete:
+      tags:
+        - Trip Management
+      summary: Remove trip participant
+      description: Remove a participant from the trip
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          description: Unique identifier for the trip
+          schema:
+            type: string
+            format: uuid
+        - name: userId
+          in: path
+          required: true
+          description: User ID to remove from the trip
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Participant removed successfully
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -506,7 +712,7 @@ components:
           description: Trip end date
         status:
           type: string
-          enum: [planning, confirmed, in-progress, completed, cancelled]
+          enum: [Planning, Confirmed, InProgress, Completed, Cancelled]
           description: Current trip status
         budget:
           $ref: '#/components/schemas/TripBudget'
@@ -632,7 +838,7 @@ components:
           maxLength: 500
         type:
           type: string
-          enum: [accommodation, transportation, activity, meal, other]
+          enum: [Accommodation, Transportation, Activity, Meal, Other]
         startTime:
           type: string
           format: date-time
@@ -648,7 +854,7 @@ components:
           minimum: 0
         bookingStatus:
           type: string
-          enum: [not-booked, pending, confirmed, cancelled]
+          enum: [NotBooked, Pending, Confirmed, Cancelled]
         bookingReference:
           type: string
           maxLength: 50
@@ -707,7 +913,7 @@ components:
           pattern: '^[A-Z]{3}$'
         category:
           type: string
-          enum: [accommodation, transportation, food, activities, shopping, other]
+          enum: [Accommodation, Transportation, Food, Activities, Shopping, Other]
         description:
           type: string
           maxLength: 200
@@ -872,7 +1078,7 @@ components:
           format: date
         status:
           type: string
-          enum: [planning, confirmed, in-progress, completed, cancelled]
+          enum: [Planning, Confirmed, InProgress, Completed, Cancelled]
         budget:
           $ref: '#/components/schemas/TripBudget'
 
@@ -887,7 +1093,7 @@ components:
           maxLength: 500
         type:
           type: string
-          enum: [accommodation, transportation, activity, meal, other]
+          enum: [Accommodation, Transportation, Activity, Meal, Other]
         startTime:
           type: string
           format: date-time
@@ -920,7 +1126,7 @@ components:
           maxLength: 500
         type:
           type: string
-          enum: [accommodation, transportation, activity, meal, other]
+          enum: [Accommodation, Transportation, Activity, Meal, Other]
         startTime:
           type: string
           format: date-time
@@ -951,7 +1157,7 @@ components:
           pattern: '^[A-Z]{3}$'
         category:
           type: string
-          enum: [accommodation, transportation, food, activities, shopping, other]
+          enum: [Accommodation, Transportation, Food, Activities, Shopping, Other]
         description:
           type: string
           maxLength: 200

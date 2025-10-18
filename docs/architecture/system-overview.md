@@ -273,8 +273,8 @@ CREATE TABLE families (
 // Trips Planner Service: DocumentDB (MongoDB)
 {
   "_id": "trip_123",
-  "tripId": "TRIP#456",
-  "familyId": "FAMILY#789",
+  "tripId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "familyId": "f7e8d9c6-b5a4-3210-9876-543210fedcba",
   "title": "Summer Family Vacation",
   "destination": {
     "city": "Orlando",
