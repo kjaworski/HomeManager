@@ -1,0 +1,911 @@
+openapi: 3.0.3
+info:
+  title: HomeManager Trips Planner Service API
+  description: |
+    Trip planning, itinerary management, and travel coordination service for HomeManager system.
+    Handles trip planning, booking management, expense tracking, and AI-powered travel suggestions.
+  version: 1.0.0
+  contact:
+    name: HomeManager Development Team
+    url: https://github.com/kjaworski/HomeManager
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.homemanager.local/trips
+    description: Local development server
+  - url: https://api.homemanager.com/trips
+    description: Production server
+
+security:
+  - bearerAuth: []
+
+paths:
+  /trips:
+    get:
+      tags:
+        - Trip Management
+      summary: Get trips
+      description: Retrieve trips for the current user's family with filtering and pagination
+      parameters:
+        - name: status
+          in: query
+          description: Filter trips by status
+          schema:
+            type: string
+            enum: [planning, confirmed, in-progress, completed, cancelled]
+        - name: dateFrom
+          in: query
+          description: Filter trips starting from this date
+          schema:
+            type: string
+            format: date
+        - name: dateTo
+          in: query
+          description: Filter trips ending before this date
+          schema:
+            type: string
+            format: date
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: List of trips retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  trips:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Trip'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      tags:
+        - Trip Management
+      summary: Create a new trip
+      description: Create a new trip for the family
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTripRequest'
+      responses:
+        '201':
+          description: Trip created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /trips/{tripId}:
+    get:
+      tags:
+        - Trip Management
+      summary: Get trip by ID
+      description: Retrieve detailed information about a specific trip
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          description: Unique identifier for the trip
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Trip retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Trip Management
+      summary: Update trip
+      description: Update an existing trip
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          description: Unique identifier for the trip
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTripRequest'
+      responses:
+        '200':
+          description: Trip updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - Trip Management
+      summary: Delete trip
+      description: Delete a trip (soft delete - archives the trip)
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          description: Unique identifier for the trip
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Trip deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /trips/{tripId}/itinerary:
+    get:
+      tags:
+        - Itinerary Management
+      summary: Get trip itinerary
+      description: Retrieve the complete itinerary for a trip
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          description: Unique identifier for the trip
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Itinerary retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ItineraryItem'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    post:
+      tags:
+        - Itinerary Management
+      summary: Add itinerary item
+      description: Add a new item to the trip itinerary
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          description: Unique identifier for the trip
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateItineraryItemRequest'
+      responses:
+        '201':
+          description: Itinerary item added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItineraryItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /trips/{tripId}/expenses:
+    get:
+      tags:
+        - Expense Management
+      summary: Get trip expenses
+      description: Retrieve all expenses for a trip
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          description: Unique identifier for the trip
+          schema:
+            type: string
+            format: uuid
+        - name: category
+          in: query
+          description: Filter expenses by category
+          schema:
+            type: string
+            enum: [accommodation, transportation, food, activities, shopping, other]
+      responses:
+        '200':
+          description: Expenses retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  expenses:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TripExpense'
+                  summary:
+                    $ref: '#/components/schemas/ExpenseSummary'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    post:
+      tags:
+        - Expense Management
+      summary: Add trip expense
+      description: Add a new expense to the trip
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          description: Unique identifier for the trip
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTripExpenseRequest'
+      responses:
+        '201':
+          description: Expense added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripExpense'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /trips/{tripId}/ai-suggestions:
+    get:
+      tags:
+        - AI Features
+      summary: Get AI trip suggestions
+      description: Get AI-powered suggestions for trip planning and optimization
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          description: Unique identifier for the trip
+          schema:
+            type: string
+            format: uuid
+        - name: type
+          in: query
+          description: Type of suggestions to retrieve
+          schema:
+            type: string
+            enum: [activities, restaurants, accommodations, transportation, budget-optimization]
+      responses:
+        '200':
+          description: AI suggestions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AISuggestion'
+                  confidence:
+                    type: number
+                    format: float
+                    minimum: 0
+                    maximum: 1
+                    description: AI confidence score for the suggestions
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Trip:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the trip
+        familyId:
+          type: string
+          format: uuid
+          description: Family that owns this trip
+        title:
+          type: string
+          maxLength: 100
+          description: Trip title
+        description:
+          type: string
+          maxLength: 1000
+          description: Trip description
+        destination:
+          $ref: '#/components/schemas/Destination'
+        startDate:
+          type: string
+          format: date
+          description: Trip start date
+        endDate:
+          type: string
+          format: date
+          description: Trip end date
+        status:
+          type: string
+          enum: [planning, confirmed, in-progress, completed, cancelled]
+          description: Current trip status
+        budget:
+          $ref: '#/components/schemas/TripBudget'
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/TripParticipant'
+        createdBy:
+          type: string
+          format: uuid
+          description: User who created the trip
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - familyId
+        - title
+        - destination
+        - startDate
+        - endDate
+        - status
+        - createdBy
+        - createdAt
+        - updatedAt
+
+    Destination:
+      type: object
+      properties:
+        city:
+          type: string
+          maxLength: 100
+        country:
+          type: string
+          maxLength: 100
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+        timezone:
+          type: string
+          description: IANA timezone identifier
+      required:
+        - city
+        - country
+
+    Coordinates:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+      required:
+        - latitude
+        - longitude
+
+    TripBudget:
+      type: object
+      properties:
+        totalBudget:
+          type: number
+          format: decimal
+          minimum: 0
+          description: Total budget for the trip
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+          description: ISO 4217 currency code
+        categoryBudgets:
+          type: object
+          additionalProperties:
+            type: number
+            format: decimal
+            minimum: 0
+          description: Budget breakdown by category
+      required:
+        - totalBudget
+        - currency
+
+    TripParticipant:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: User ID of the participant
+        role:
+          type: string
+          enum: [organizer, participant]
+          description: Role in the trip
+        joinedAt:
+          type: string
+          format: date-time
+      required:
+        - userId
+        - role
+        - joinedAt
+
+    ItineraryItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tripId:
+          type: string
+          format: uuid
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        type:
+          type: string
+          enum: [accommodation, transportation, activity, meal, other]
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        location:
+          $ref: '#/components/schemas/Location'
+        estimatedCost:
+          type: number
+          format: decimal
+          minimum: 0
+        bookingStatus:
+          type: string
+          enum: [not-booked, pending, confirmed, cancelled]
+        bookingReference:
+          type: string
+          maxLength: 50
+        notes:
+          type: string
+          maxLength: 1000
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - tripId
+        - title
+        - type
+        - startTime
+        - bookingStatus
+        - createdAt
+        - updatedAt
+
+    Location:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+        address:
+          type: string
+          maxLength: 500
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+        placeId:
+          type: string
+          description: Google Places API place ID
+      required:
+        - name
+
+    TripExpense:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tripId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: decimal
+          minimum: 0
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        category:
+          type: string
+          enum: [accommodation, transportation, food, activities, shopping, other]
+        description:
+          type: string
+          maxLength: 200
+        paidBy:
+          type: string
+          format: uuid
+          description: User ID of who paid
+        expenseDate:
+          type: string
+          format: date
+        receipt:
+          $ref: '#/components/schemas/Receipt'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - tripId
+        - amount
+        - currency
+        - category
+        - description
+        - paidBy
+        - expenseDate
+        - createdAt
+        - updatedAt
+
+    Receipt:
+      type: object
+      properties:
+        fileName:
+          type: string
+        fileUrl:
+          type: string
+          format: uri
+        uploadedAt:
+          type: string
+          format: date-time
+      required:
+        - fileName
+        - fileUrl
+        - uploadedAt
+
+    ExpenseSummary:
+      type: object
+      properties:
+        totalSpent:
+          type: number
+          format: decimal
+        budgetRemaining:
+          type: number
+          format: decimal
+        categoryBreakdown:
+          type: object
+          additionalProperties:
+            type: number
+            format: decimal
+        participantBreakdown:
+          type: object
+          additionalProperties:
+            type: number
+            format: decimal
+
+    AISuggestion:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [activities, restaurants, accommodations, transportation, budget-optimization]
+        title:
+          type: string
+        description:
+          type: string
+        estimatedCost:
+          type: number
+          format: decimal
+          minimum: 0
+        location:
+          $ref: '#/components/schemas/Location'
+        rating:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 5
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+        source:
+          type: string
+          description: AI model or service that generated the suggestion
+        metadata:
+          type: object
+          additionalProperties: true
+      required:
+        - id
+        - type
+        - title
+        - description
+        - confidence
+        - source
+
+    CreateTripRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        destination:
+          $ref: '#/components/schemas/Destination'
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        budget:
+          $ref: '#/components/schemas/TripBudget'
+        participants:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: User IDs of initial participants
+      required:
+        - title
+        - destination
+        - startDate
+        - endDate
+
+    UpdateTripRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        destination:
+          $ref: '#/components/schemas/Destination'
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [planning, confirmed, in-progress, completed, cancelled]
+        budget:
+          $ref: '#/components/schemas/TripBudget'
+
+    CreateItineraryItemRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        type:
+          type: string
+          enum: [accommodation, transportation, activity, meal, other]
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        location:
+          $ref: '#/components/schemas/Location'
+        estimatedCost:
+          type: number
+          format: decimal
+          minimum: 0
+        notes:
+          type: string
+          maxLength: 1000
+      required:
+        - title
+        - type
+        - startTime
+
+    CreateTripExpenseRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: decimal
+          minimum: 0
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        category:
+          type: string
+          enum: [accommodation, transportation, food, activities, shopping, other]
+        description:
+          type: string
+          maxLength: 200
+        expenseDate:
+          type: string
+          format: date
+        receipt:
+          $ref: '#/components/schemas/Receipt'
+      required:
+        - amount
+        - currency
+        - category
+        - description
+        - expenseDate
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        limit:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+        totalPages:
+          type: integer
+          minimum: 0
+      required:
+        - page
+        - limit
+        - total
+        - totalPages
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Error code for programmatic handling
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+      required:
+        - code
+        - message
+
+  responses:
+    BadRequest:
+      description: Bad request - validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized - invalid or missing authentication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
