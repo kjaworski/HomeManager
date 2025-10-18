@@ -180,7 +180,7 @@ paths:
       tags:
         - Trip Management
       summary: Delete trip
-      description: Delete a trip (soft delete - archives the trip)
+      description: Delete a trip (hard delete - permanently removes the trip)
       parameters:
         - name: tripId
           in: path
@@ -448,7 +448,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateTripExpenseRequest'
+              $ref: '#/components/schemas/UpdateTripExpenseRequest'
       responses:
         '200':
           description: Expense updated successfully
@@ -577,11 +577,11 @@ paths:
           description: Participant added successfully
           headers:
             Location:
-              description: URI of the updated trip
+              description: URI of the participant within the trip
               schema:
                 type: string
                 format: uri
-                example: /api/trips/{tripId}
+                example: /api/trips/{tripId}/participants/{userId}
           content:
             application/json:
               schema:
@@ -1145,6 +1145,35 @@ components:
           maxLength: 1000
 
     CreateTripExpenseRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+          multipleOf: 0.01
+          minimum: 0
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        category:
+          type: string
+          enum: [Accommodation, Transportation, Food, Activities, Shopping, Other]
+        description:
+          type: string
+          maxLength: 200
+        expenseDate:
+          type: string
+          format: date
+        receipt:
+          $ref: '#/components/schemas/Receipt'
+      required:
+        - amount
+        - currency
+        - category
+        - description
+        - expenseDate
+
+    UpdateTripExpenseRequest:
       type: object
       properties:
         amount:

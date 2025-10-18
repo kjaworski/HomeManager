@@ -27,9 +27,8 @@ File Storage: Amazon S3 (receipt uploads)
 ```jsonc
 {
   "trips": {
-    "_id": "ObjectId",
-    "tripId": "uuid",
-    "familyId": "uuid",
+    "_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890", // Trip.Id maps to MongoDB _id
+    "familyId": "f7e8d9c6-b5a4-3210-9876-543210fedcba",
     "title": "string",
     "description": "string",
     "destination": {
@@ -70,9 +69,8 @@ File Storage: Amazon S3 (receipt uploads)
   },
   
   "itinerary": {
-    "_id": "ObjectId",
-    "itemId": "uuid",
-    "tripId": "uuid",
+    "_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890", // ItineraryItem.Id maps to MongoDB _id
+    "tripId": "f7e8d9c6-b5a4-3210-9876-543210fedcba",
     "title": "string",
     "description": "string",
     "type": "string", // accommodation, transportation, activity, meal, other
@@ -96,9 +94,8 @@ File Storage: Amazon S3 (receipt uploads)
   },
   
   "expenses": {
-    "_id": "ObjectId",
-    "expenseId": "uuid",
-    "tripId": "uuid",
+    "_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890", // TripExpense.Id maps to MongoDB _id
+    "tripId": "f7e8d9c6-b5a4-3210-9876-543210fedcba",
     "amount": "decimal",
     "currency": "string",
     "category": "string", // accommodation, transportation, food, activities, shopping, other
@@ -120,18 +117,18 @@ File Storage: Amazon S3 (receipt uploads)
 ```javascript
 // Trips Collection
 db.trips.createIndex({ "familyId": 1, "startDate": -1 })
-db.trips.createIndex({ "tripId": 1 }, { unique: true })
+// _id is automatically unique, no additional index needed
 db.trips.createIndex({ "status": 1, "startDate": -1 })
 db.trips.createIndex({ "participants.userId": 1 })
 
 // Itinerary Collection
 db.itinerary.createIndex({ "tripId": 1, "startTime": 1 })
-db.itinerary.createIndex({ "itemId": 1 }, { unique: true })
+// _id is automatically unique, no additional index needed
 db.itinerary.createIndex({ "type": 1, "bookingStatus": 1 })
 
 // Expenses Collection
 db.expenses.createIndex({ "tripId": 1, "expenseDate": -1 })
-db.expenses.createIndex({ "expenseId": 1 }, { unique: true })
+// _id is automatically unique, no additional index needed
 db.expenses.createIndex({ "paidBy": 1, "expenseDate": -1 })
 db.expenses.createIndex({ "category": 1 })
 ```
