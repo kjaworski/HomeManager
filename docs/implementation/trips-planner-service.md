@@ -352,11 +352,27 @@ public class ItineraryService : IItineraryService
     private readonly ITripService _tripService;
     private readonly IAITravelSuggestionService _aiService;
     private readonly IGoogleMapsService _mapsService;
+    private readonly ICurrentUserService _currentUserService;
+
+    public ItineraryService(
+        IItineraryRepository repository,
+        ITripService tripService,
+        IAITravelSuggestionService aiService,
+        IGoogleMapsService mapsService,
+        ICurrentUserService currentUserService)
+    {
+        _repository = repository;
+        _tripService = tripService;
+        _aiService = aiService;
+        _mapsService = mapsService;
+        _currentUserService = currentUserService;
+    }
 
     public async Task<ItineraryItem> AddItineraryItemAsync(Guid tripId, CreateItineraryItemRequest request)
     {
         // Validate trip exists and user has access
-        var trip = await _tripService.GetTripByIdAsync(tripId, request.FamilyId);
+        var familyId = await _currentUserService.GetFamilyIdAsync();
+        var trip = await _tripService.GetTripByIdAsync(tripId, familyId);
         if (trip == null)
             throw new TripNotFoundException(tripId);
 
@@ -397,13 +413,25 @@ public interface IAITravelSuggestionService
 
 public class AITravelSuggestionService : IAITravelSuggestionService
 {
-    private readonly IAmazonBedrockClient _bedrockClient;
-    private readonly ITripService _tripService;
+    private readonly IAmazonBedrockRuntime _bedrockClient;
+    private readonly ITripRepository _tripRepository;
     private readonly IGoogleMapsService _mapsService;
+
+    public AITravelSuggestionService(
+        IAmazonBedrockRuntime bedrockClient,
+        ITripRepository tripRepository,
+        IGoogleMapsService mapsService)
+    {
+        _bedrockClient = bedrockClient;
+        _tripRepository = tripRepository;
+        _mapsService = mapsService;
+    }
 
     public async Task<List<AISuggestion>> GetTravelSuggestionsAsync(Guid tripId, SuggestionType type)
     {
-        var trip = await _tripService.GetTripByIdAsync(tripId, Guid.Empty); // Internal call
+        // Note: This would typically use a repository directly for internal calls
+        // or have an internal overload that bypasses family validation
+        var trip = await _tripRepository.GetByIdAsync(tripId);
         if (trip == null) return [];
 
         var prompt = type switch
@@ -656,6 +684,25 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Authentication & Authorization
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.Authority = builder.Configuration["Authentication:Authority"];
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("FamilyMember", policy =>
+        policy.Requirements.Add(new FamilyMemberRequirement()));
+});
+
+builder.Services.AddScoped<IAuthorizationHandler, FamilyMemberHandler>();
+
 // MongoDB Configuration
 builder.Services.Configure<MongoDbSettings>(
     builder.Configuration.GetSection("MongoDb"));
@@ -674,7 +721,7 @@ builder.Services.AddScoped<IMongoDatabase>(serviceProvider =>
 });
 
 // AWS Services
-builder.Services.AddAWSService<IAmazonBedrockClient>();
+builder.Services.AddAWSService<IAmazonBedrockRuntime>();
 builder.Services.AddAWSService<IAmazonS3>();
 
 // Application Services
@@ -972,11 +1019,14 @@ spec:
 ```csharp
 builder.Services.AddHealthChecks()
     .AddMongoDb(
-        builder.Configuration.GetConnectionString("MongoDb"),
+        builder.Configuration["MongoDb:ConnectionString"],
         name: "mongodb",
         timeout: TimeSpan.FromSeconds(5))
-    .AddAWSService<IAmazonBedrockClient>()
-    .AddHttpClient<IGoogleMapsService>();
+    // Add custom health checks for external services
+    .AddUrlGroup(
+        new Uri("https://maps.googleapis.com/maps/api"),
+        name: "googlemaps",
+        timeout: TimeSpan.FromSeconds(5));
 
 app.MapHealthChecks("/health");
 app.MapHealthChecks("/health/ready");
@@ -986,26 +1036,31 @@ app.MapHealthChecks("/health/ready");
 ```csharp
 public class TripService : ITripService
 {
+    private static readonly Meter _meter = new("HomeManager.TripsPlanner");
     private static readonly Counter<int> TripsCreated = 
-        Meter.CreateCounter<int>("trips.created", "trips", "Number of trips created");
+        _meter.CreateCounter<int>("trips.created", "trips", "Number of trips created");
     
     private static readonly Histogram<double> TripCreationDuration = 
-        Meter.CreateHistogram<double>("trips.creation.duration", "ms", "Trip creation duration");
+        _meter.CreateHistogram<double>("trips.creation.duration", "ms", "Trip creation duration");
+
+    private static readonly ActivitySource ActivitySource = new("HomeManager.TripsPlanner");
 
     public async Task<Trip> CreateTripAsync(CreateTripRequest request, Guid familyId, Guid userId)
     {
         using var activity = ActivitySource.StartActivity("TripService.CreateTrip");
-        using var timer = TripCreationDuration.CreateTimer();
+        var stopwatch = Stopwatch.StartNew();
         
         try
         {
             var trip = await CreateTripInternalAsync(request, familyId, userId);
             TripsCreated.Add(1, new("status", "success"));
+            TripCreationDuration.Record(stopwatch.ElapsedMilliseconds);
             return trip;
         }
         catch (Exception ex)
         {
             TripsCreated.Add(1, new("status", "failure"));
+            TripCreationDuration.Record(stopwatch.ElapsedMilliseconds);
             _logger.LogError(ex, "Failed to create trip for family {FamilyId}", familyId);
             throw;
         }

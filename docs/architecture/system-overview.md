@@ -13,13 +13,8 @@ graph TB
         TripsApp[Trips React App]
     end
     
-    subgraph "API Gateway Laye        var server = serviceType switch
-        {
-            "todo" => "todo-ai-mcp",
-            "budget" => "budget-ai-mcp",
-            "trips" => "trips-ai-mcp",
-            _ => "general-ai-mcp"
-        };      ALB[AWS Application Load Balancer]
+    subgraph "API Gateway Layer"
+        ALB[AWS Application Load Balancer]
         APIGW[API Gateway]
     end
     
