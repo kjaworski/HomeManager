@@ -24,6 +24,7 @@ docs/
 │   ├── identity-service.md           # Authentication & user management
 │   ├── todo-service.md               # Task management API
 │   ├── budget-service.md             # Financial management API
+│   ├── trips-planner-service.yaml    # Travel planning API (OpenAPI spec)
 │   └── ai-gateway.md                 # AI services API
 ├── implementation/                    # Step-by-step guides
 │   ├── development-setup.md          # Local development environment
@@ -97,6 +98,7 @@ Authentication: JWT + AWS Cognito (future)
 Identity Service: Amazon RDS PostgreSQL (ACID compliance)
 Todo Service: Amazon DynamoDB (NoSQL flexibility)
 Budget Service: Amazon DocumentDB/MongoDB (Document storage)
+Trips Planner Service: Amazon DocumentDB/MongoDB (Document storage)
 Caching: Amazon ElastiCache Redis
 ```
 
@@ -124,7 +126,7 @@ Monitoring: CloudWatch + X-Ray
 ```yaml
 Framework: React 18+ (TypeScript)
 Architecture: Micro-frontends (separate apps)
-Apps: Todo App, Budget App, Trips App (future)
+Apps: Todo App, Budget App, Trips App
 State Management: TanStack Query + Zustand
 UI Library: Tailwind CSS + shadcn/ui
 ```

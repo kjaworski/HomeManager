@@ -22,6 +22,7 @@ graph TB
         Identity[Identity Service<br/>RDS PostgreSQL]
         Todo[Todo Service<br/>DynamoDB]
         Budget[Budget Service<br/>DocumentDB]
+        TripsPlanner[Trips Planner Service<br/>DocumentDB]
         AIGateway[AI Gateway<br/>MCP Server]
     end
     
@@ -29,6 +30,7 @@ graph TB
         Bedrock[Amazon Bedrock]
         TodoAI[Todo AI MCP]
         BudgetAI[Budget AI MCP]
+        TripsAI[Trips AI MCP]
     end
     
     subgraph "Data Layer"
@@ -54,25 +56,31 @@ graph TB
     APIGW --> Identity
     APIGW --> Todo
     APIGW --> Budget
+    APIGW --> TripsPlanner
     APIGW --> AIGateway
     
     Identity --> RDS
     Todo --> DDB
     Budget --> DocDB
+    TripsPlanner --> DocDB
     
     AIGateway --> Bedrock
     AIGateway --> TodoAI
     AIGateway --> BudgetAI
+    AIGateway --> TripsAI
     
     Todo --> TodoAI
     Budget --> BudgetAI
+    TripsPlanner --> TripsAI
     
     Todo --> Redis
     Budget --> Redis
+    TripsPlanner --> Redis
     Identity --> Redis
     
     Todo --> SQS
     Budget --> SQS
+    TripsPlanner --> SQS
     Identity --> EventBridge
     
     EKS --> CloudWatch
@@ -108,6 +116,12 @@ Budget Service: DocumentDB (MongoDB)
   - Document storage for complex receipts
   - Flexible schema for financial data
   - Aggregation pipeline for reports
+
+Trips Planner Service: DocumentDB (MongoDB)
+  - Document storage for trip itineraries
+  - Flexible schema for travel data
+  - Geospatial queries for location features
+  - Aggregation pipeline for travel analytics
 ```
 
 #### **Communication Patterns**
@@ -146,7 +160,7 @@ AI Gateway:
 Service-Specific AI:
   - Todo AI: Task intelligence
   - Budget AI: Financial insights
-  - Trip AI: Travel planning (future)
+  - Trips AI: Travel planning and suggestions
 
 Foundation Models:
   - Amazon Bedrock
@@ -251,6 +265,58 @@ CREATE TABLE families (
     "spending_pattern": "normal",
     "budget_impact": "low",
     "suggestions": ["Consider bulk buying for milk"]
+  }
+}
+```
+
+```json
+// Trips Planner Service: DocumentDB (MongoDB)
+{
+  "_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890", // Trip.Id maps directly to _id
+  "familyId": "f7e8d9c6-b5a4-3210-9876-543210fedcba",
+  "title": "Summer Family Vacation",
+  "destination": {
+    "city": "Orlando",
+    "country": "USA",
+    "coordinates": {
+      "latitude": 28.5383,
+      "longitude": -81.3792
+    },
+    "timezone": "America/New_York"
+  },
+  "startDate": "2024-07-15",
+  "endDate": "2024-07-22",
+  "status": "confirmed",
+  "budget": {
+    "totalBudget": 5000.00,
+    "currency": "USD",
+    "categoryBudgets": {
+      "accommodation": 2000.00,
+      "transportation": 800.00,
+      "food": 1200.00,
+      "activities": 1000.00
+    }
+  },
+  "participants": [
+    {
+      "userId": "a3b2c1d4-e5f6-7890-abcd-ef1234567890",
+      "role": "organizer",
+      "joinedAt": "2024-06-01T10:00:00Z"
+    }
+  ],
+  "aiSuggestions": {
+    "recommendedActivities": [
+      {
+        "name": "Disney World Magic Kingdom",
+        "estimatedCost": 109.00,
+        "rating": 4.8,
+        "category": "theme_park"
+      }
+    ],
+    "budgetOptimization": {
+      "potentialSavings": 300.00,
+      "suggestions": ["Book accommodation 2 weeks earlier for 15% discount"]
+    }
   }
 }
 ```
@@ -397,7 +463,7 @@ sequenceDiagram
     participant Client as React App
     participant Gateway as API Gateway
     participant Identity as Identity Service
-    participant Service as Todo/Budget Service
+    participant Service as Todo/Budget/Trips Service
     participant DB as Database
     
     Client->>Gateway: Request with JWT

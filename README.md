@@ -171,8 +171,8 @@ This project is optimized for VS Code development:
 
 - [Scalar Documentation](https://github.com/scalar/scalar) - Official Scalar GitHub repository  
 - [Scalar ASP.NET Core](https://www.nuget.org/packages/Scalar.AspNetCore) - NuGet package for ASP.NET Core
-- [Scalar Live Demo](https://docs.scalar.com/) - Interactive demo of Scalar UI
-- [Why Scalar over Swagger UI](https://docs.scalar.com/swagger-ui-alternative) - Modern, fast API documentation interface
+- [Scalar Live Demo](https://github.com/scalar/scalar#features) - Interactive demo and features overview
+- [Scalar vs Swagger UI](https://github.com/scalar/scalar#why-scalar) - Modern, fast API documentation interface
 
 ### Microsoft Recommendations
 
