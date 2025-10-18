@@ -852,7 +852,7 @@ components:
           maxLength: 500
         type:
           type: string
-          enum: [Accommodation, Transportation, Activity, Meal, Other]
+          enum: [accommodation, transportation, activity, meal, other]
         startTime:
           type: string
           format: date-time
