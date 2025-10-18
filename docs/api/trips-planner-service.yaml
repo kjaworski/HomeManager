@@ -95,6 +95,13 @@ paths:
       responses:
         '201':
           description: Trip created successfully
+          headers:
+            Location:
+              description: URI of the newly created trip
+              schema:
+                type: string
+                format: uri
+                example: /api/trips/{tripId}
           content:
             application/json:
               schema:
@@ -244,6 +251,13 @@ paths:
       responses:
         '201':
           description: Itinerary item added successfully
+          headers:
+            Location:
+              description: URI of the newly created itinerary item
+              schema:
+                type: string
+                format: uri
+                example: /api/trips/{tripId}/itinerary/{itemId}
           content:
             application/json:
               schema:
@@ -388,6 +402,13 @@ paths:
       responses:
         '201':
           description: Expense added successfully
+          headers:
+            Location:
+              description: URI of the newly created expense
+              schema:
+                type: string
+                format: uri
+                example: /api/trips/{tripId}/expenses/{expenseId}
           content:
             application/json:
               schema:

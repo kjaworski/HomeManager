@@ -23,7 +23,7 @@ File Storage: Amazon S3 (receipt uploads)
 ```
 
 ### DocumentDB Collection Design
-```json
+```jsonc
 {
   "trips": {
     "_id": "ObjectId",
@@ -418,15 +418,18 @@ public class AITravelSuggestionService : IAITravelSuggestionService
     private readonly IAmazonBedrockRuntime _bedrockClient;
     private readonly ITripRepository _tripRepository;
     private readonly IGoogleMapsService _mapsService;
+    private readonly IConfiguration _configuration;
 
     public AITravelSuggestionService(
         IAmazonBedrockRuntime bedrockClient,
         ITripRepository tripRepository,
-        IGoogleMapsService mapsService)
+        IGoogleMapsService mapsService,
+        IConfiguration configuration)
     {
         _bedrockClient = bedrockClient;
         _tripRepository = tripRepository;
         _mapsService = mapsService;
+        _configuration = configuration;
     }
 
     public async Task<List<AISuggestion>> GetTravelSuggestionsAsync(Guid tripId, SuggestionType type)
@@ -445,9 +448,11 @@ public class AITravelSuggestionService : IAITravelSuggestionService
             _ => throw new ArgumentException("Invalid suggestion type")
         };
 
+        var modelId = _configuration["AWS:Bedrock:ModelId"] ?? "anthropic.claude-3-sonnet-20240229-v1:0";
+        
         var response = await _bedrockClient.InvokeModelAsync(new InvokeModelRequest
         {
-            ModelId = "anthropic.claude-3-sonnet-20240229-v1:0",
+            ModelId = modelId,
             ContentType = "application/json",
             Accept = "application/json",
             Body = new MemoryStream(JsonSerializer.SerializeToUtf8Bytes(new
@@ -614,6 +619,45 @@ public static class TripsEndpoints
         var trip = await tripService.CreateTripAsync(request, familyId, userId);
         return Results.Created($"/api/trips/{trip.Id}", trip.ToDto());
     }
+
+    private static async Task<IResult> GetTrip(
+        Guid tripId,
+        ITripService tripService,
+        ICurrentUserService currentUser)
+    {
+        var familyId = await currentUser.GetFamilyIdAsync();
+        var trip = await tripService.GetTripByIdAsync(tripId, familyId);
+        
+        if (trip == null)
+            return Results.NotFound();
+            
+        return Results.Ok(trip.ToDto());
+    }
+
+    private static async Task<IResult> UpdateTrip(
+        Guid tripId,
+        UpdateTripRequest request,
+        ITripService tripService,
+        ICurrentUserService currentUser)
+    {
+        var familyId = await currentUser.GetFamilyIdAsync();
+        var userId = currentUser.GetUserId();
+        
+        var trip = await tripService.UpdateTripAsync(tripId, request, familyId, userId);
+        return Results.Ok(trip.ToDto());
+    }
+
+    private static async Task<IResult> DeleteTrip(
+        Guid tripId,
+        ITripService tripService,
+        ICurrentUserService currentUser)
+    {
+        var familyId = await currentUser.GetFamilyIdAsync();
+        var userId = currentUser.GetUserId();
+        
+        var success = await tripService.DeleteTripAsync(tripId, familyId, userId);
+        return success ? Results.NoContent() : Results.NotFound();
+    }
 }
 ```
 
@@ -675,11 +719,40 @@ public class MongoTripRepository : ITripRepository
         );
     }
 
+    public async Task<Trip?> GetByIdAsync(Guid tripId)
+    {
+        var filter = Builders<Trip>.Filter.Eq(t => t.Id, tripId);
+        return await _collection.Find(filter).FirstOrDefaultAsync();
+    }
+
     public async Task<Trip> CreateAsync(Trip trip)
     {
         await _collection.InsertOneAsync(trip);
         _logger.LogInformation("Created trip {TripId} for family {FamilyId}", trip.Id, trip.FamilyId);
         return trip;
+    }
+
+    public async Task<Trip> UpdateAsync(Trip trip)
+    {
+        var filter = Builders<Trip>.Filter.Eq(t => t.Id, trip.Id);
+        var result = await _collection.ReplaceOneAsync(filter, trip);
+        
+        if (result.MatchedCount == 0)
+            throw new TripNotFoundException(trip.Id);
+            
+        _logger.LogInformation("Updated trip {TripId}", trip.Id);
+        return trip;
+    }
+
+    public async Task<bool> DeleteAsync(Guid tripId)
+    {
+        var filter = Builders<Trip>.Filter.Eq(t => t.Id, tripId);
+        var result = await _collection.DeleteOneAsync(filter);
+        
+        if (result.DeletedCount > 0)
+            _logger.LogInformation("Deleted trip {TripId}", tripId);
+            
+        return result.DeletedCount > 0;
     }
 }
 ```
@@ -740,6 +813,9 @@ builder.Services.AddScoped<ITripService, TripService>();
 builder.Services.AddScoped<IItineraryService, ItineraryService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<IAITravelSuggestionService, AITravelSuggestionService>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IFamilyService, FamilyService>();
+builder.Services.AddScoped<IEventBus, EventBus>();
 
 // Repositories
 builder.Services.AddScoped<ITripRepository, MongoTripRepository>();
