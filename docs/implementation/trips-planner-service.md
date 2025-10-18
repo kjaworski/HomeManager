@@ -139,6 +139,9 @@ db.expenses.createIndex({ "category": 1 })
 ```csharp
 // Note: DateOnly requires custom MongoDB serialization
 // Add to Program.cs: BsonSerializer.RegisterSerializer(new DateOnlySerializer(BsonType.String));
+// Note: EnumMember attributes handle JSON serialization mapping for kebab-case API values
+using System.Runtime.Serialization;
+
 public record Trip(
     Guid Id,
     Guid FamilyId,
@@ -178,10 +181,15 @@ public record TripParticipant(
 
 public enum TripStatus
 {
+    [EnumMember(Value = "planning")]
     Planning,
+    [EnumMember(Value = "confirmed")]
     Confirmed,
+    [EnumMember(Value = "in-progress")]
     InProgress,
+    [EnumMember(Value = "completed")]
     Completed,
+    [EnumMember(Value = "cancelled")]
     Cancelled
 }
 
@@ -229,9 +237,13 @@ public enum ItineraryItemType
 
 public enum BookingStatus
 {
+    [EnumMember(Value = "not-booked")]
     NotBooked,
+    [EnumMember(Value = "pending")]
     Pending,
+    [EnumMember(Value = "confirmed")]
     Confirmed,
+    [EnumMember(Value = "cancelled")]
     Cancelled
 }
 ```
@@ -267,6 +279,25 @@ public enum ExpenseCategory
     Shopping,
     Other
 }
+
+### AI Suggestion Models
+```csharp
+public record BudgetOptimizationSuggestion(
+    decimal PotentialSavings,
+    string Currency,
+    List<BudgetOptimizationItem> Recommendations,
+    decimal ConfidenceScore,
+    string Reasoning
+);
+
+public record BudgetOptimizationItem(
+    ExpenseCategory Category,
+    decimal CurrentSpending,
+    decimal RecommendedBudget,
+    decimal PotentialSaving,
+    string Suggestion,
+    int Priority
+);
 ```
 
 ## Service Implementation
@@ -508,7 +539,7 @@ Format as JSON array with objects containing: title, description, estimatedCost,
 ```csharp
 [ApiController]
 [Route("api/trips")]
-[Authorize]
+[Authorize(Policy = "FamilyMember")]
 public class TripsController : ControllerBase
 {
     private readonly ITripService _tripService;
@@ -1136,8 +1167,8 @@ app.MapHealthChecks("/health/ready");
 
 ### Metrics & Logging
 ```csharp
-// Enhanced TripService with observability (replaces basic implementation above)
-public class TripService : ITripService
+// Production TripService with observability - use this implementation
+public class TripServiceWithObservability : ITripService
 {
     private static readonly Meter _meter = new("HomeManager.TripsPlanner");
     private static readonly Counter<int> TripsCreated = 

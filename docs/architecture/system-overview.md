@@ -272,8 +272,7 @@ CREATE TABLE families (
 ```json
 // Trips Planner Service: DocumentDB (MongoDB)
 {
-  "_id": "trip_123",
-  "tripId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890", // Trip.Id maps directly to _id
   "familyId": "f7e8d9c6-b5a4-3210-9876-543210fedcba",
   "title": "Summer Family Vacation",
   "destination": {

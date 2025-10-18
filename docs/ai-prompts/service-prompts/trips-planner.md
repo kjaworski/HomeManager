@@ -132,9 +132,7 @@ Design RESTful API endpoints for the trips planner service:
 - POST /api/trips/{tripId}/expenses/{expenseId}/receipt
 
 **AI Features:**
-- GET /api/trips/{tripId}/ai/suggestions?type=activities
-- POST /api/trips/{tripId}/ai/optimize-budget
-- POST /api/trips/{tripId}/ai/generate-itinerary
+- GET /api/trips/{tripId}/ai/suggestions?type=activities|restaurants|accommodations|transportation|budget-optimization
 
 Implement using ASP.NET Core Minimal APIs with proper validation, error handling, and OpenAPI documentation.
 ```

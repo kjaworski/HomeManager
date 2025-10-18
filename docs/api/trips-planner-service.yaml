@@ -34,7 +34,7 @@ paths:
           description: Filter trips by status
           schema:
             type: string
-            enum: [Planning, Confirmed, InProgress, Completed, Cancelled]
+            enum: [planning, confirmed, in-progress, completed, cancelled]
         - name: dateFrom
           in: query
           description: Filter trips starting from this date
@@ -70,12 +70,26 @@ paths:
               schema:
                 type: object
                 properties:
-                  trips:
+                  items:
                     type: array
                     items:
                       $ref: '#/components/schemas/Trip'
-                  pagination:
-                    $ref: '#/components/schemas/Pagination'
+                  total:
+                    type: integer
+                    minimum: 0
+                    description: Total number of trips
+                  page:
+                    type: integer
+                    minimum: 1
+                    description: Current page number
+                  limit:
+                    type: integer
+                    minimum: 1
+                    description: Number of items per page
+                  totalPages:
+                    type: integer
+                    minimum: 0
+                    description: Total number of pages
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -712,7 +726,7 @@ components:
           description: Trip end date
         status:
           type: string
-          enum: [Planning, Confirmed, InProgress, Completed, Cancelled]
+          enum: [planning, confirmed, in-progress, completed, cancelled]
           description: Current trip status
         budget:
           $ref: '#/components/schemas/TripBudget'
@@ -854,7 +868,7 @@ components:
           minimum: 0
         bookingStatus:
           type: string
-          enum: [NotBooked, Pending, Confirmed, Cancelled]
+          enum: [not-booked, pending, confirmed, cancelled]
         bookingReference:
           type: string
           maxLength: 50
@@ -1078,7 +1092,7 @@ components:
           format: date
         status:
           type: string
-          enum: [Planning, Confirmed, InProgress, Completed, Cancelled]
+          enum: [planning, confirmed, in-progress, completed, cancelled]
         budget:
           $ref: '#/components/schemas/TripBudget'
 
