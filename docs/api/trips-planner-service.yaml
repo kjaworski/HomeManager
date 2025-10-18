@@ -454,12 +454,12 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/AISuggestion'
-                  confidence:
+                  meanConfidence:
                     type: number
                     format: float
                     minimum: 0
                     maximum: 1
-                    description: AI confidence score for the suggestions
+                    description: Mean AI confidence score for all suggestions in the response
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':

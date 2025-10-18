@@ -17,6 +17,7 @@ Caching: Amazon ElastiCache Redis
 AI Integration: Amazon Bedrock (Claude models)
 Maps Integration: Google Maps Platform API
 SDK: AWS SDK for .NET
+AWS Configuration: Amazon.Extensions.NETCore.Setup
 Testing: xUnit with Testcontainers
 Documentation: Swagger/OpenAPI 3.0
 File Storage: Amazon S3 (receipt uploads)
@@ -805,6 +806,7 @@ builder.Services.AddScoped<IMongoDatabase>(serviceProvider =>
 });
 
 // AWS Services
+builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 builder.Services.AddAWSService<IAmazonBedrockRuntime>();
 builder.Services.AddAWSService<IAmazonS3>();
 
@@ -1128,6 +1130,7 @@ app.MapHealthChecks("/health/ready");
 
 ### Metrics & Logging
 ```csharp
+// Enhanced TripService with observability (replaces basic implementation above)
 public class TripService : ITripService
 {
     private static readonly Meter _meter = new("HomeManager.TripsPlanner");

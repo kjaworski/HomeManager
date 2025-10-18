@@ -24,7 +24,7 @@ docs/
 │   ├── identity-service.md           # Authentication & user management
 │   ├── todo-service.md               # Task management API
 │   ├── budget-service.md             # Financial management API
-│   ├── trips-planner-service.yaml    # Travel planning API
+│   ├── trips-planner-service.yaml    # Travel planning API (OpenAPI spec)
 │   └── ai-gateway.md                 # AI services API
 ├── implementation/                    # Step-by-step guides
 │   ├── development-setup.md          # Local development environment
