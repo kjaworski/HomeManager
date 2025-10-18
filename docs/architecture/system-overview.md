@@ -299,7 +299,7 @@ CREATE TABLE families (
   },
   "participants": [
     {
-      "userId": "USER#123",
+      "userId": "a3b2c1d4-e5f6-7890-abcd-ef1234567890",
       "role": "organizer",
       "joinedAt": "2024-06-01T10:00:00Z"
     }
