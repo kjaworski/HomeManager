@@ -1059,6 +1059,20 @@ public class TripService : ITripService
 
     private static readonly ActivitySource ActivitySource = new("HomeManager.TripsPlanner");
 
+    private readonly ITripRepository _tripRepository;
+    private readonly IEventBus _eventBus;
+    private readonly ILogger<TripService> _logger;
+
+    public TripService(
+        ITripRepository tripRepository,
+        IEventBus eventBus,
+        ILogger<TripService> logger)
+    {
+        _tripRepository = tripRepository;
+        _eventBus = eventBus;
+        _logger = logger;
+    }
+
     public async Task<Trip> CreateTripAsync(CreateTripRequest request, Guid familyId, Guid userId)
     {
         using var activity = ActivitySource.StartActivity("TripService.CreateTrip");
@@ -1066,7 +1080,29 @@ public class TripService : ITripService
         
         try
         {
-            var trip = await CreateTripInternalAsync(request, familyId, userId);
+            var trip = new Trip(
+                Id: Guid.NewGuid(),
+                FamilyId: familyId,
+                Title: request.Title,
+                Description: request.Description,
+                Destination: request.Destination,
+                StartDate: request.StartDate,
+                EndDate: request.EndDate,
+                Status: TripStatus.Planning,
+                Budget: request.Budget,
+                Participants: [new TripParticipant(userId, ParticipantRole.Organizer, DateTime.UtcNow)],
+                CreatedBy: userId,
+                CreatedAt: DateTime.UtcNow,
+                UpdatedAt: DateTime.UtcNow
+            );
+
+            await _tripRepository.CreateAsync(trip);
+            
+            // Publish event for AI suggestions generation
+            await _eventBus.PublishAsync(new TripCreatedEvent(trip.Id, familyId, trip.Destination));
+            
+            _logger.LogInformation("Trip {TripId} created for family {FamilyId}", trip.Id, familyId);
+            
             TripsCreated.Add(1, new("status", "success"));
             TripCreationDuration.Record(stopwatch.ElapsedMilliseconds);
             return trip;
