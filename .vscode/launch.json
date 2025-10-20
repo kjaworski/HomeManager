@@ -2,13 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch HomeManager.Api",
+            "name": "Launch HomeManager.TodoService",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/Services/HomeManager.Api/bin/Debug/net10.0/HomeManager.Api.dll",
+            "program": "${workspaceFolder}/src/Services/HomeManager.TodoService/bin/Debug/net10.0/HomeManager.TodoService.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/Services/HomeManager.Api",
+            "cwd": "${workspaceFolder}/src/Services/HomeManager.TodoService",
             "console": "internalConsole",
             "stopAtEntry": false,
             "serverReadyAction": {

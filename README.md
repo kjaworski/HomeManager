@@ -10,21 +10,20 @@ This solution is designed to support multiple applications:
 
 ```text
 HomeManager/
-├── .vscode/                      # VS Code workspace configuration
-│   ├── settings.json            # Editor and C# DevKit settings
-│   ├── tasks.json               # Build, test, watch tasks
-│   └── launch.json              # Debug configuration
-├── src/                          # Source code
-│   ├── HomeManager.Api/          # Main WebAPI project (✓ Created)
-│   ├── HomeManager.SecondApi/    # Future: Second WebAPI project
-│   └── HomeManager.Web/          # Future: React frontend
-├── tests/                        # Test projects
-│   ├── HomeManager.Api.Tests/    # API unit and integration tests (✓ Created)
-│   └── HomeManager.SecondApi.Tests/ # Future: Second API tests
-├── docs/                         # Documentation (✓ Created)
-├── HomeManager.sln               # Solution file (✓ Created)
-├── .gitignore                    # Git ignore rules (✓ Created)
-└── README.md                     # This file
+├── .vscode/                           # VS Code workspace configuration
+│   ├── settings.json                 # Editor and C# DevKit settings
+│   ├── tasks.json                    # Build, test, watch tasks
+│   └── launch.json                   # Debug configuration
+├── src/                               # Source code
+│   └── Services/
+│       └── HomeManager.TodoService/  # Todo service API (✓ Created)
+├── tests/                             # Test projects
+│   └── Services/
+│       └── HomeManager.TodoService.Tests/ # Todo API tests (✓ Created)
+├── docs/                              # Documentation (✓ Created)
+├── HomeManager.sln                    # Solution file (✓ Created)
+├── .gitignore                         # Git ignore rules (✓ Created)
+└── README.md                          # This file
 ```
 
 ## Technology Stack
@@ -54,21 +53,21 @@ dotnet restore
 dotnet build
 
 # Build specific project
-dotnet build src/HomeManager.Api
+dotnet build src/Services/HomeManager.TodoService
 ```
 
 ### Running the API
 
 ```bash
-# Run the API project
-dotnet run --project src/HomeManager.Api
+# Run the Todo service
+dotnet run --project src/Services/HomeManager.TodoService
 
 # Or navigate to the project directory
-cd src/HomeManager.Api
+cd src/Services/HomeManager.TodoService
 dotnet run
 ```
 
-The API will be available at:
+The Todo service will be available at:
 
 - HTTPS: `https://localhost:7154` (when using HTTPS profile)
 - HTTP: `http://localhost:5179` (default profile)
@@ -83,7 +82,7 @@ dotnet test
 dotnet test --collect:"XPlat Code Coverage"
 
 # Run specific test project
-dotnet test tests/HomeManager.Api.Tests
+dotnet test tests/Services/HomeManager.TodoService.Tests
 ```
 
 ### Development

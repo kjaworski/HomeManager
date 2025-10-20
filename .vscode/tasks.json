@@ -37,7 +37,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/src/Services/HomeManager.Api"
+                "${workspaceFolder}/src/Services/HomeManager.TodoService"
             ],
             "problemMatcher": "$msCompile"
         },
