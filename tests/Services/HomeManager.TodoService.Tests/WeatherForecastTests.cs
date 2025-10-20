@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace HomeManager.Api.Tests;
+namespace HomeManager.TodoService.Tests;
 
 public class WeatherForecastTests : IClassFixture<WebApplicationFactory<Program>>
 {

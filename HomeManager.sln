@@ -7,13 +7,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{F8B8E7B2-3D5C-4A1E-9F2B-6C8D1E4F7A9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeManager.Api", "src\Services\HomeManager.Api\HomeManager.Api.csproj", "{A506E511-CABE-4133-9B45-722D233B44E7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeManager.TodoService", "src\Services\HomeManager.TodoService\HomeManager.TodoService.csproj", "{A506E511-CABE-4133-9B45-722D233B44E7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05-4346-4AA6-1389-037BE0695223}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{D9E4F7A2-6B1C-4E8F-9A3D-5C7E9F2B4A6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeManager.Api.Tests", "tests\Services\HomeManager.Api.Tests\HomeManager.Api.Tests.csproj", "{0375EFD6-86B5-4B5A-9A48-A518FA3D44EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeManager.TodoService.Tests", "tests\Services\HomeManager.TodoService.Tests\HomeManager.TodoService.Tests.csproj", "{0375EFD6-86B5-4B5A-9A48-A518FA3D44EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
